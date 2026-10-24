@@ -1,5 +1,7 @@
 # Verification results - Piano Roll 0.5.0
 
+Native load follow-up: Live Log.txt at 22:40:59 reports `js: can't find file bridge-max.js`, followed by missing functions. The companion installer now resolves both Max/Node entry paths and the protocol include path for its actual destination. Two device-path tests (including spaces), adapter include-path checks and the transport tests pass. The install can relink a moved packaged companion. A fresh native load is still required to confirm the path fix.
+
 Launcher startup fix: Max imports the Node entry point, so it must initialize without relying on `require.main` or an environment flag. The entry point is now unconditional, the test imports it the same way, and launcher sessions/exits are logged to `runtime.log`. Transport and adapter tests pass after this fix; the staged companion was updated. Native launch confirmation remains pending.
 
 Built and checked on 2026-10-24 on `feat/live-clip-bridge`. Seven CTest suites pass: sequencing, editing, processor integration, clip protocol, C++ Live bridge, mocked Max API adapter, and local bridge transport. The compiled VST3 also passes the separate 24-case host matrix and existing tempo/seek/MIDI/state checks. All six supplied FL comparison records and five Python comparator tests continue to pass.

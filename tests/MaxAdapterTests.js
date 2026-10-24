@@ -9,7 +9,7 @@ LiveAPI.prototype.call=function(name,text){if(name==='get_all_notes_extended')re
  if(name==='add_new_notes')JSON.parse(text).notes.forEach(n=>notes.push({...n,note_id:nextId++}));
  if(name==='remove_notes_by_id'){const ids=Array.from(arguments).slice(1);notes=notes.filter(n=>!ids.includes(n.note_id));}
 };
-const context={LiveAPI,ClipProtocol:protocol,include(){},outlet(...args){messages.push(args);},JSON,Math,Number,String,Array,Object,Error,isFinite};
+const context={LiveAPI,ClipProtocol:protocol,jsarguments:['bridge-max.js','C:/installed companion/clip-protocol.js'],include(file){assert.equal(file,'C:/installed companion/clip-protocol.js');},outlet(...args){messages.push(args);},JSON,Math,Number,String,Array,Object,Error,isFinite};
 vm.createContext(context);vm.runInContext(fs.readFileSync(path.join(__dirname,'../companion/bridge-max.js'),'utf8'),context);
 context.init();context.session('test-session');
 let snapshot=JSON.parse(messages.findLast(x=>x[1]==='snapshot')[2]);

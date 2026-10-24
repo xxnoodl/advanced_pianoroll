@@ -94,7 +94,7 @@
             130,
             22
           ],
-          "text": "js bridge-max.js"
+          "text": "js bridge-max.js clip-protocol.js"
         }
       },
       {

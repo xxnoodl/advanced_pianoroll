@@ -3,8 +3,10 @@ from pathlib import Path
 import json, struct, time
 ROOT = Path(__file__).resolve().parent
 
-def patch():
+def patch(script_folder=None):
     boxes, lines = [], []
+    def script(name):
+        return '"' + (Path(script_folder)/name).resolve().as_posix() + '"' if script_folder else name
     def box(id, cls, text='', rect=(0,0,100,22), presentation=None, **extra):
         value={'id':id,'maxclass':cls,'patching_rect':list(rect),**extra}
         if text: value['text']=text
@@ -13,8 +15,8 @@ def patch():
     def link(a,b,port=0,inlet=0): lines.append({'patchline':{'source':[a,port],'destination':[b,inlet]}})
     box('midi-in','newobj','midiin',(20,260,60,22));box('midi-out','newobj','midiout',(20,310,60,22));link('midi-in','midi-out')
     box('ready','newobj','live.thisdevice',(130,260,100,22));box('init','message','init',(130,290,40,22));link('ready','init')
-    box('defer','newobj','deferlow',(200,330,70,22));box('api','newobj','js bridge-max.js',(200,370,130,22));link('init','defer');link('defer','api')
-    box('node','newobj','node.script bridge-node.js @autostart 1 @defer 1',(410,370,360,22));link('api','node');link('node','defer')
+    box('defer','newobj','deferlow',(200,330,70,22));box('api','newobj','js ' + script('bridge-max.js') + ' ' + script('clip-protocol.js'),(200,370,130,22));link('init','defer');link('defer','api')
+    box('node','newobj','node.script ' + script('bridge-node.js') + ' @autostart 1 @defer 1',(410,370,360,22));link('api','node');link('node','defer')
     box('metro','newobj','qmetro 300',(260,260,90,22));box('on','message','1',(260,230,30,22));box('poll','message','poll',(260,300,40,22));link('ready','on');link('on','metro');link('metro','poll');link('poll','defer')
     box('title','comment','PIANO ROLL LIVE',(20,10,220,24),(10,8,350,24),fontsize=16.0)
     box('open','textbutton','Open editor',(20,60,110,26),(10,38,110,26));box('open-msg','message','openeditor',(20,100,90,22));link('open','open-msg');link('open-msg','defer')
@@ -23,7 +25,7 @@ def patch():
     box('hint','comment','Live plays the clip through its existing instrument. Apply sends edits back.',(20,200,610,30),(10,118,560,28),fontsize=11.0)
     return {'patcher':{'fileversion':1,'appversion':{'major':9,'minor':0,'revision':0,'architecture':'x64','modernui':1},'classnamespace':'box',
         'rect':[100,100,800,480],'openinpresentation':1,'default_fontsize':12.0,'devicewidth':580.0,'boxes':boxes,'lines':lines,
-        'dependency_cache':[{'name':n,'type':'TEXT','implicit':1} for n in ['bridge-max.js','bridge-node.js','bridge-transport.js','clip-protocol.js']]}}
+        'dependency_cache':[dict({'name':n,'type':'TEXT','implicit':1}, **({'bootpath':Path(script_folder).resolve().as_posix(),'patcherrelativepath':'.'} if script_folder else {})) for n in ['bridge-max.js','bridge-node.js','bridge-transport.js','clip-protocol.js']]}}
 
 def chunk(tag,payload): return tag+struct.pack('>I',8+len(payload))+payload
 
@@ -35,9 +37,9 @@ def device(data,name):
     archive=b'mx@c'+struct.pack('>III',16,0,16+len(content))+content+chunk(b'dlst',chunk(b'dire',fields))
     return b'ampf'+struct.pack('<I',4)+b'mmmm'+b'meta'+struct.pack('<II',4,4)+b'ptch'+struct.pack('<I',len(archive))+archive
 
-def build(destination=ROOT):
+def build(destination=ROOT, resolve_paths=False):
     destination=Path(destination);destination.mkdir(parents=True,exist_ok=True)
-    data=patch();(destination/'Piano Roll Live.maxpat').write_text(json.dumps(data,indent=2)+'\n')
+    data=patch(destination if resolve_paths else None);(destination/'Piano Roll Live.maxpat').write_text(json.dumps(data,indent=2)+'\n')
     payload=device(data,'Piano Roll Live.amxd');(destination/'Piano Roll Live.amxd').write_bytes(payload)
     assert struct.unpack_from('<I',payload,28)[0]==len(payload)-32
     directory=32+struct.unpack_from('>I',payload,44)[0]
@@ -46,5 +48,9 @@ def build(destination=ROOT):
     assert parsed==data
     print(destination/'Piano Roll Live.amxd')
 if __name__=='__main__':
-    import sys
-    build(sys.argv[1] if len(sys.argv)>1 else ROOT)
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument('destination',nargs='?',default=ROOT)
+    parser.add_argument('--resolve-paths',action='store_true')
+    args=parser.parse_args()
+    build(args.destination,args.resolve_paths)

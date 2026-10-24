@@ -10,7 +10,7 @@ A first clip bridge for the shared piano-roll editor. Use one companion per Live
 4. Edit a note, then click the **Apply edits to Live clip** arrow icon. Play the clip in Live to hear the existing synth. There is no two-track MIDI routing for clip playback in this mode.
 5. Select another clip to follow it. Unapplied changes stay in the editor. Return to the original clip to apply them, or use **Reload selected Live clip** to discard them and switch.
 
-Keep the AMXD, JS files and bin folder together. The device is not frozen. Save your Live Set to retain the companion; unsent editor changes are not stored in that Set.
+Keep the AMXD, JS files and bin folder together. The installer resolves script paths for the destination folder; run the installer again after moving the installation. The device is not frozen. Save your Live Set to retain the companion; unsent editor changes are not stored in that Set.
 
 ## This version
 

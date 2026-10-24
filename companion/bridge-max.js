@@ -2,7 +2,7 @@
 autowatch = 1;
 inlets = 1;
 outlets = 2;
-include('clip-protocol.js');
+include(typeof jsarguments !== 'undefined' && jsarguments.length > 1 ? String(jsarguments[1]) : 'clip-protocol.js');
 var bridgeReady = false, bridgeSession = '', baseline = null, serial = 0, lastFingerprint = '', replies = {};
 function status(text) { outlet(1, 'set', String(text)); }
 function init() { bridgeReady = true; outlet(0, 'boot'); status('Select a MIDI clip, then Open editor.'); }
