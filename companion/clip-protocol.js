@@ -17,7 +17,7 @@
         return clip.notes.filter(function(n) { return n.start_time >= clip.loopStart && n.start_time + n.duration <= clip.loopEnd + 1e-8; });
     }
     function validateClip(clip) {
-        if (!clip || !/^[1-9][0-9]*$/.test(String(clip.clipId))) fail('Select a MIDI clip in Live.');
+        if (!clip || !/^(?:[1-9][0-9]*|empty:[1-9][0-9]*|arrangement:[1-9][0-9]*:[0-9]+)$/.test(String(clip.clipId))) fail('Select a MIDI clip in Live.');
         if (!finite(clip.loopStart) || !finite(clip.loopEnd) || clip.loopStart < 0 || clip.loopEnd <= clip.loopStart || clip.loopEnd-clip.loopStart > 128) fail('This bridge supports clip loops up to 128 beats.');
         if (!Array.isArray(clip.notes)) fail('Live did not return a notes list.');
         var seen = {};

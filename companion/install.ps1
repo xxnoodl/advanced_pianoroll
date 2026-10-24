@@ -4,7 +4,10 @@ $project = Split-Path -Parent $PSScriptRoot
 $packagedEditor = Join-Path $PSScriptRoot 'bin\Piano Roll Clip Editor.exe'
 if (-not $Destination) {
     if (Test-Path -LiteralPath $packagedEditor) { $Destination = $PSScriptRoot }
-    else { $Destination = Join-Path $project 'host-test\live-companion' }
+    else {
+        $version = (Select-String -LiteralPath (Join-Path $project 'CMakeLists.txt') -Pattern 'project\(PianoRoll VERSION ([\d.]+)').Matches[0].Groups[1].Value
+        $Destination = Join-Path $project "host-test\live-companion-$version"
+    }
 }
 $editor = Join-Path $project 'build\PianoRollClipEditor_artefacts\Release\Piano Roll Clip Editor.exe'
 if (-not (Test-Path -LiteralPath $editor) -and (Test-Path -LiteralPath $packagedEditor)) { $editor = $packagedEditor }
@@ -12,7 +15,7 @@ if (-not (Test-Path -LiteralPath $editor)) { throw 'Build the Release clip edito
 New-Item -ItemType Directory -Force -Path $Destination | Out-Null
 & python (Join-Path $PSScriptRoot 'build_device.py') $Destination --resolve-paths
 if ($LASTEXITCODE -ne 0) { throw 'Companion device build failed.' }
-foreach ($file in @('bridge-max.js','bridge-node.js','bridge-transport.js','clip-protocol.js','README.md','build_device.py','install.ps1')) {
+foreach ($file in @('bridge-max.js','bridge-node.js','bridge-transport.js','clip-protocol.js','live-workflow.js','README.md','build_device.py','install.ps1')) {
     $sourceFile = Join-Path $PSScriptRoot $file
     if ([IO.Path]::GetFullPath($sourceFile) -ne [IO.Path]::GetFullPath((Join-Path $Destination $file))) {
         Copy-Item -LiteralPath $sourceFile -Destination $Destination -Force

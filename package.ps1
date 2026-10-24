@@ -39,7 +39,8 @@ foreach ($previewName in @('pianoroll-preview.png', 'pianoroll-selection-preview
     $previewPath = Join-Path $projectPath "build\$previewName"
     if (Test-Path -LiteralPath $previewPath) { Copy-Item -LiteralPath $previewPath -Destination $packagePath }
 }
-$companionInstall = Join-Path $projectPath 'host-test\live-companion'
+$companionInstall = Join-Path $projectPath "host-test\live-companion-$releaseVersion"
+if (-not (Test-Path -LiteralPath $companionInstall)) { $companionInstall = Join-Path $projectPath 'host-test\live-companion' }
 if (Test-Path -LiteralPath $companionInstall) { Copy-Item -LiteralPath $companionInstall -Destination (Join-Path $packagePath 'LiveCompanion') -Recurse }
 Compress-Archive -LiteralPath $packagePath -DestinationPath "$packagePath.zip"
 Write-Output "$packagePath.zip"

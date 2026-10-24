@@ -94,7 +94,7 @@
             130,
             22
           ],
-          "text": "js bridge-max.js clip-protocol.js"
+          "text": "js bridge-max.js clip-protocol.js live-workflow.js"
         }
       },
       {
@@ -112,6 +112,19 @@
       },
       {
         "box": {
+          "id": "midi-iter",
+          "maxclass": "newobj",
+          "patching_rect": [
+            110,
+            420,
+            45,
+            22
+          ],
+          "text": "iter"
+        }
+      },
+      {
+        "box": {
           "id": "metro",
           "maxclass": "newobj",
           "patching_rect": [
@@ -120,7 +133,7 @@
             90,
             22
           ],
-          "text": "qmetro 300"
+          "text": "qmetro 150"
         }
       },
       {
@@ -247,7 +260,7 @@
             46
           ],
           "fontsize": 12.0,
-          "text": "Select a MIDI clip, then Open editor.",
+          "text": "Open editor, select a MIDI instrument track, and start writing.",
           "presentation": 1,
           "presentation_rect": [
             10,
@@ -268,7 +281,7 @@
             30
           ],
           "fontsize": 11.0,
-          "text": "Live plays the clip through its existing instrument. Apply sends edits back.",
+          "text": "Notes sync automatically. Play and typing audition use the selected instrument.",
           "presentation": 1,
           "presentation_rect": [
             10,
@@ -348,6 +361,30 @@
           ],
           "destination": [
             "defer",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "api",
+            2
+          ],
+          "destination": [
+            "midi-iter",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "midi-iter",
+            0
+          ],
+          "destination": [
+            "midi-out",
             0
           ]
         }
@@ -479,6 +516,11 @@
       },
       {
         "name": "clip-protocol.js",
+        "type": "TEXT",
+        "implicit": 1
+      },
+      {
+        "name": "live-workflow.js",
         "type": "TEXT",
         "implicit": 1
       }
