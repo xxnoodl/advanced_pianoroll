@@ -1,33 +1,39 @@
-# Piano Roll Live
+﻿# Piano Roll Live
 
-A first clip bridge for the shared piano-roll editor. Use one companion per Live Set. It follows the MIDI clip shown in Live's Detail View while the editor has no unapplied changes. Editing stays in the shared C++ core; Live plays the actual clip through the instrument already on that track.
+One shared piano-roll window for the selected Live MIDI track. The companion stays on a MIDI helper track; Live plays the actual clip through the synth already on the target track. The editor does not open an audio device.
 
-## Try it
+## Use it
 
-1. Drag **Piano Roll Live.amxd** from the installed companion folder onto an empty MIDI helper track in Live Suite.
-2. Click **Open editor** on the device. The editor opens without initializing an audio device.
-3. Select a MIDI clip on any synth track in Live. Its active loop appears in the floating editor; the clip name is shown in the toolbar.
-4. Edit a note, then click the **Apply edits to Live clip** arrow icon. Play the clip in Live to hear the existing synth. There is no two-track MIDI routing for clip playback in this mode.
-5. Select another clip to follow it. Unapplied changes stay in the editor. Return to the original clip to apply them, or use **Reload selected Live clip** to discard them and switch.
+1. Load **Piano Roll Live.amxd** on an empty MIDI helper track and click **Open editor**.
+2. Select a MIDI instrument track in Live. You can select an existing clip or an empty Session slot. In Arrangement View, an empty area at Live's current timeline position becomes a draft.
+3. Draw notes in our editor. The first completed edit creates the clip if needed. Subsequent edits sync automatically after you finish the gesture; there is no normal Apply step.
+4. Press **Space** or the play icon inside our window. Unsaved notes are sent first, then Live plays the target clip. Press again to stop Live's transport. The editor shows Live's tempo and playhead.
+5. Enable the keyboard icon or **Ctrl+T** for FL-style typing audition. Clicking notes or piano keys also sends audition MIDI through the selected synth.
 
-Keep the AMXD, JS files and bin folder together. The installer resolves script paths for the destination folder; run the installer again after moving the installation. The device is not frozen. Save your Live Set to retain the companion; unsent editor changes are not stored in that Set.
+Typing auditions notes; it does not record them into the score without a recording workflow. Draw notes to populate the clip in this version.
 
-## This version
+## Synth audition
 
-- Edits supported fields of existing notes by their Live note IDs, retaining other returned properties. Adds new notes and removes notes you deleted from the editable loop.
-- Boundary-crossing notes and notes outside the active loop are left out of the editable score and preserved in Live.
-- Refuses stale snapshots, another selected clip, missing connections, invalid notes, and overlapping Apply requests.
-- Supports up to 2048 editable notes and a loop up to 128 beats. Loop resizing is not implemented. Shorter-than-one-bar loops use a minimum four-beat editor viewport; added notes must stay within the real clip loop.
-- Automatic writes, live typing audition, editor Space-to-Live transport, and per-note expression editing are not connected in this first bridge. The normal VST3 typing/MIDI workflow is unchanged. Use Live's transport to hear clip playback.
-- Existing advanced properties are retained by modifying existing IDs; new notes use Live's defaults. Native Live verification of expression retention remains pending.
-- Apply can involve several Live API calls. This API does not expose a transaction covering those calls. A reported partial Apply must be inspected in Live and undone there if needed, then reloaded.
+The helper automatically routes its MIDI output to the selected track. Give synth tracks distinct names and leave their normal MIDI monitoring on Auto or In. The companion uses the target's temporary implicit arm state for audition and restores it after note release. It does not change explicit recording-arm buttons. While Live is recording, an otherwise unarmed target must be armed by you before auditioning, to avoid starting unintended recording.
 
-## Build
+Held notes release on target changes, editor exit, or a missing-editor watchdog timeout. The helper's previous routing is restored when the editor closes or the target changes; a routing choice you changed yourself is retained. A companion placed before an instrument on that same track can audition directly, but a separate helper track supports following any synth.
 
-Run `build.ps1` at the project root, then `companion/install.ps1`. This stages the complete companion and GUI executable in `host-test/live-companion`. No npm packages are downloaded. Python builds the original Max patch/container; Node and CTest exercise the protocol, adapter and local file exchange. Runtime traffic stays in a unique per-device temporary directory.
+## Saving and conflicts
+
+Edits are sent after a short idle period (180 ms after the latest change and after finishing a gesture). You can keep editing while a save is pending; newer edits are retained and sent next. A save that began on one clip stays bound to that clip if you select another track. It never substitutes the newly selected clip as its destination.
+
+If Live's notes changed externally, sync pauses and retains your local edits. A retry icon appears; Reload lets you discard local changes and load Live's current version. Existing notes are updated by ID. Notes outside or crossing the active loop are preserved outside the editable score. New notes use Live's defaults for properties our editor does not expose. Per-note expression editing, loop resizing, and full native clip Undo integration remain outside this version.
+
+Session drafts use the chosen empty slot (or the first empty slot on the selected track). Arrangement drafts begin at Live's current timeline position, extend up to four bars, and stop before the next existing clip. Selecting a track alone does not create a clip. Writing notes or explicitly pressing Play materializes a draft. Existing clips are never overwritten to make a draft.
+
+## Install or move
+
+From the source project, run `build.ps1`, then `companion/install.ps1`. The complete local install is staged under `host-test/live-companion-0.6.0`. Keep the AMXD, scripts and bin folder together. When moving a packaged companion, run its `install.ps1` once to resolve script paths for the new folder. No npm download is needed.
+
+Use one companion per Set and save your Live Set normally. Close an old editor window and remove its old device before loading another version.
 
 ## Validation
 
-The device container is structurally checked against its generated patch. Tests cover real C++ file exchange, source IDs, loop offsets, conflict handling, acknowledgements and no duplicate preview/sequencer output. JavaScript adapter tests use a mocked Live API; they do not establish native Max parsing or API behavior. Loading the generated AMXD, launching its editor from Live, and applying actual clip edits require the first manual Live test.
+Unit/integration tests cover drafts, note-ID reconciliation, concurrent edits during saves, original-target binding, MIDI event ordering, routing restoration, held-note release, transport commands, conflicts, and installed paths. The Live API tests are mocked; they do not prove that the audible audition and native API behavior work on a particular host. The user confirmed native launch of 0.5.0; the 0.6.0 authoring workflow needs a fresh Live pass.
 
-API references: [clip notes](https://docs.cycling74.com/apiref/lom/clip/), [selected clip](https://docs.cycling74.com/apiref/lom/song_view/), [Node for Max](https://docs.cycling74.com/reference/node.script).
+References: [clip notes](https://docs.cycling74.com/apiref/lom/clip/), [clip creation](https://docs.cycling74.com/apiref/lom/clipslot/), [track routing](https://docs.cycling74.com/apiref/lom/track/).

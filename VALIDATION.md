@@ -1,3 +1,19 @@
+# Verification results - Piano Roll 0.6.0
+
+Built and checked on 2026-10-24 on `feat/live-clip-bridge`. All nine CTest suites pass. The compiled VST3 passes the independent 24-configuration host probe; the existing six actual FL comparison records and five Python MIDI-comparator tests still pass.
+
+New tests exercise empty Session/Arrangement drafts, no creation merely from selecting a track, overlap refusal, first-edit clip creation, original-target binding after selection changes, note-ID mappings, local edits retained across asynchronous acknowledgements, order-independent dirty checks, automatic editor save, queued playback after clip creation, transport commands, and balanced audition events. The mocked Live workflow checks routing restoration, user routing changes, reference-counted held notes, target-switch release, watchdog release, record-arm preservation and ambiguous-name rejection. The routing dictionary wrapper matches the Max Live API's property/dictionary/list format; native verification is still required. Inspected the clip-mode preview.
+
+The user confirmed that 0.5.0 opens from the companion after resolving script paths. That proves native launch, not the new 0.6.0 workflow. Empty-track creation, actual automatic note writes, native transport, playhead feedback and audible synth audition remain pending the fresh Live pass. Typing auditions notes; it does not record into the score. Per-note expression editing and native multi-call Undo integration are not complete.
+
+VST3 SHA256: `B6EF4F2317A394C3E01935DEA24F471508971913975F01FD9DEFECAAA73B5C96`.
+
+Clip editor SHA256: `B3090213AEB286F590F165C02C8E392C81CFFCBA9785E6A65D6ED458A62B4639`.
+
+Historical results follow.
+
+---
+
 # Verification results - Piano Roll 0.5.0
 
 Native load follow-up: Live Log.txt at 22:40:59 reports `js: can't find file bridge-max.js`, followed by missing functions. The companion installer now resolves both Max/Node entry paths and the protocol include path for its actual destination. Two device-path tests (including spaces), adapter include-path checks and the transport tests pass. The install can relink a moved packaged companion. A fresh native load is still required to confirm the path fix.

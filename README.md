@@ -24,10 +24,12 @@ Version 0.4.2 refines the tempo field and dropdown/menu styling, adds a MIDI-rou
 
 Version 0.5.0 adds the first optional Live clip companion and a shared floating clip editor that does not initialize an audio device. The companion follows the selected MIDI clip while the editor is clean; explicit Apply writes note edits back by ID, with conflict checks. Live plays the clip through its existing instrument. The companion's native AMXD loading and real Live API calls require a manual Live test; passing mocked adapter/file tests does not establish that integration. Typing audition and Space-to-Live transport are not connected in this first clip mode. See [companion/README.md](companion/README.md) for installation, behavior and current limits. The normal VST3 remains independent.
 
+Version 0.6.0 makes the Live companion an authoring workflow: empty MIDI targets become drafts, the first edit creates the clip, edits sync automatically, and Play/Space control Live from our editor. A MIDI audition path routes clicks and FL-style typing to the selected synth through the helper, with temporary implicit arm and routing restoration. Edits made while a save is pending are rebased onto the acknowledged note IDs. Native launch was user-confirmed for 0.5.0; the new 0.6.0 workflow and actual synth audition still need native Live verification. See [companion/README.md](companion/README.md).
+
 ## Current status
 
 - Windows x64 VST3 and standalone binaries compiled successfully with MSVC and JUCE 8.0.12.
-- Seven CTest suites pass: sequencing, editing, processor/editor integration, clip protocol, Live file bridge, mocked Max API adapter, and local companion transport.
+- Nine CTest suites cover sequencing, editing, processor/editor integration, clip protocol, Live file bridge, mocked Max API adapter, local companion transport, Live workflow logic, and device paths.
 - Tests exercise preview audio, generated/passthrough MIDI, sample timing, host seek/stop handling, state recall, MIDI/pattern files, quantize, undo/redo, duplicate, and mute.
 - The editor was rendered offscreen, inspected, and included as `build/pianoroll-preview.png`.
 - The baseline 0.1.0 hidden standalone process launch remained running and responsive; audio-device initialization and visible-window interaction were not verified by that check. Version 0.2.0 still requires live-window testing.

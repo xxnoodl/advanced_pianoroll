@@ -1,7 +1,7 @@
 ﻿{
-    "TimestampUtc":  "2026-10-24T15:39:24.9916344Z",
+    "TimestampUtc":  "2026-10-24T23:48:51.0193326Z",
     "TestedBinary":  "C:\\Users\\zihn\\Documents\\PianoRollVST3\\build\\PianoRoll_artefacts\\Release\\VST3\\Piano Roll.vst3\\Contents\\x86_64-win\\Piano Roll.vst3",
-    "SHA256":  "91816F34460F46209D49D4575F8D44AA08D3FB4399D732DE727D75DFD4E543B4",
+    "SHA256":  "B6EF4F2317A394C3E01935DEA24F471508971913975F01FD9DEFECAAA73B5C96",
     "BinaryHostChecksPassed":  true,
     "PrototypeFixtureComparisonsPassed":  5,
     "FLComparisons":  [
