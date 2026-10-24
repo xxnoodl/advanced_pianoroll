@@ -13,7 +13,7 @@ Copy-Item -LiteralPath $standalonePath -Destination $packagePath
 Copy-Item -LiteralPath $vstBundlePath -Destination $packagePath -Recurse
 $sourcePath = Join-Path $packagePath 'SourceProject'
 New-Item -ItemType Directory -Path $sourcePath | Out-Null
-foreach ($name in @('Source', 'tests', 'CMakeLists.txt', 'build.ps1', 'package.ps1', 'README.md', 'INVESTIGATION.md', 'VIDEO_REFERENCE.md', 'VALIDATION.md', 'THIRD_PARTY.md', 'rea-evidence.json')) {
+foreach ($name in @('Source', 'tests', 'companion', 'CMakeLists.txt', 'build.ps1', 'package.ps1', 'README.md', 'INVESTIGATION.md', 'VIDEO_REFERENCE.md', 'VALIDATION.md', 'THIRD_PARTY.md', 'rea-evidence.json')) {
     Copy-Item -LiteralPath (Join-Path $projectPath $name) -Destination $sourcePath -Recurse
 }
 $verificationSource = Join-Path $projectPath 'verification'
@@ -35,9 +35,11 @@ Copy-Item -LiteralPath (Join-Path $projectPath 'README.md') -Destination $packag
 Copy-Item -LiteralPath (Join-Path $projectPath 'host-test\SYNTH-ROUTING.md') -Destination $packagePath
 $juceLicensePath = Join-Path $projectPath 'vendor\JUCE\LICENSE.md'
 if (Test-Path -LiteralPath $juceLicensePath) { Copy-Item -LiteralPath $juceLicensePath -Destination (Join-Path $packagePath 'JUCE-LICENSE.md') }
-foreach ($previewName in @('pianoroll-preview.png', 'pianoroll-selection-preview.png', 'pianoroll-lfo-preview.png', 'pianoroll-250pct-ui-100.png', 'pianoroll-250pct-ui-125.png', 'pianoroll-250pct-ui-150.png')) {
+foreach ($previewName in @('pianoroll-preview.png', 'pianoroll-selection-preview.png', 'pianoroll-lfo-preview.png', 'pianoroll-250pct-ui-100.png', 'pianoroll-250pct-ui-125.png', 'pianoroll-250pct-ui-150.png', 'pianoroll-live-bridge-preview.png')) {
     $previewPath = Join-Path $projectPath "build\$previewName"
     if (Test-Path -LiteralPath $previewPath) { Copy-Item -LiteralPath $previewPath -Destination $packagePath }
 }
+$companionInstall = Join-Path $projectPath 'host-test\live-companion'
+if (Test-Path -LiteralPath $companionInstall) { Copy-Item -LiteralPath $companionInstall -Destination (Join-Path $packagePath 'LiveCompanion') -Recurse }
 Compress-Archive -LiteralPath $packagePath -DestinationPath "$packagePath.zip"
 Write-Output "$packagePath.zip"

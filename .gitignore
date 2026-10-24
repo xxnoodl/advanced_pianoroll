@@ -15,3 +15,6 @@ __pycache__/
 /verification/*-log.txt
 
 /verification/packaged-*/
+
+/companion/*.amxd
+/companion/bin/
