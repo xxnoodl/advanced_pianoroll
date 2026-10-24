@@ -1,5 +1,11 @@
-﻿const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const {start}=require('../companion/bridge-node');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const vm=require('node:vm');
+let importedStart=false;
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../companion/bridge-node.js'),'utf8'),{
+ require(name){if(name==='max-api')return {};if(name==='./bridge-transport')return {start(){importedStart=true;}};throw Error(name);}
+});
+assert(importedStart,'Max import starts launcher without require.main or environment guards');
+const {start}=require('../companion/bridge-transport');
 (async()=>{
  const handlers={},messages=[];
  const bridge=start({addHandler(k,fn){handlers[k]=fn;},outlet(...a){messages.push(a);}});

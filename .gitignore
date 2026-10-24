@@ -18,3 +18,5 @@ __pycache__/
 
 /companion/*.amxd
 /companion/bin/
+
+/companion/runtime.log

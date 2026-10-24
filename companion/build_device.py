@@ -23,7 +23,7 @@ def patch():
     box('hint','comment','Live plays the clip through its existing instrument. Apply sends edits back.',(20,200,610,30),(10,118,560,28),fontsize=11.0)
     return {'patcher':{'fileversion':1,'appversion':{'major':9,'minor':0,'revision':0,'architecture':'x64','modernui':1},'classnamespace':'box',
         'rect':[100,100,800,480],'openinpresentation':1,'default_fontsize':12.0,'devicewidth':580.0,'boxes':boxes,'lines':lines,
-        'dependency_cache':[{'name':n,'type':'TEXT','implicit':1} for n in ['bridge-max.js','bridge-node.js','clip-protocol.js']]}}
+        'dependency_cache':[{'name':n,'type':'TEXT','implicit':1} for n in ['bridge-max.js','bridge-node.js','bridge-transport.js','clip-protocol.js']]}}
 
 def chunk(tag,payload): return tag+struct.pack('>I',8+len(payload))+payload
 

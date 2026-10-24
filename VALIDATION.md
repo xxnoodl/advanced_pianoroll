@@ -1,5 +1,7 @@
 # Verification results - Piano Roll 0.5.0
 
+Launcher startup fix: Max imports the Node entry point, so it must initialize without relying on `require.main` or an environment flag. The entry point is now unconditional, the test imports it the same way, and launcher sessions/exits are logged to `runtime.log`. Transport and adapter tests pass after this fix; the staged companion was updated. Native launch confirmation remains pending.
+
 Built and checked on 2026-10-24 on `feat/live-clip-bridge`. Seven CTest suites pass: sequencing, editing, processor integration, clip protocol, C++ Live bridge, mocked Max API adapter, and local bridge transport. The compiled VST3 also passes the separate 24-case host matrix and existing tempo/seek/MIDI/state checks. All six supplied FL comparison records and five Python comparator tests continue to pass.
 
 The clip bridge tests exercise source note IDs, absolute/loop-relative timing, preserved outside/boundary notes, fractional velocity conversion, dirty-editor retention, stale/invalid sessions, rejected and accepted acknowledgements, and disabled duplicate preview/sequencer output. UI tests render the target clip and check Apply/undo enablement. Inspected `build/pianoroll-live-bridge-preview.png`. The staged GUI executable and scripts match the built/source files.

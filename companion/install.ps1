@@ -6,7 +6,7 @@ if (-not (Test-Path -LiteralPath $editor)) { throw 'Build the Release clip edito
 New-Item -ItemType Directory -Force -Path $Destination | Out-Null
 & python (Join-Path $PSScriptRoot 'build_device.py') $Destination
 if ($LASTEXITCODE -ne 0) { throw 'Companion device build failed.' }
-foreach ($file in @('bridge-max.js','bridge-node.js','clip-protocol.js','README.md')) {
+foreach ($file in @('bridge-max.js','bridge-node.js','bridge-transport.js','clip-protocol.js','README.md')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $file) -Destination $Destination -Force
 }
 $bin = Join-Path $Destination 'bin'

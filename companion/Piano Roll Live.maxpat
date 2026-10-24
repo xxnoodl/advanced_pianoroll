@@ -473,6 +473,11 @@
         "implicit": 1
       },
       {
+        "name": "bridge-transport.js",
+        "type": "TEXT",
+        "implicit": 1
+      },
+      {
         "name": "clip-protocol.js",
         "type": "TEXT",
         "implicit": 1

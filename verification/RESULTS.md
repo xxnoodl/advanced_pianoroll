@@ -1,5 +1,7 @@
 # Verification results - Piano Roll 0.5.0
 
+Launcher startup fix: Max imports the Node entry point, so it must initialize without relying on `require.main` or an environment flag. The entry point is now unconditional, the test imports it the same way, and launcher sessions/exits are logged to `runtime.log`. Transport and adapter tests pass after this fix; the staged companion was updated. Native launch confirmation remains pending.
+
 Built and checked on 2026-10-24 on `feat/live-clip-bridge`. Seven CTest suites pass: sequencing, editing, processor integration, clip protocol, C++ Live bridge, mocked Max API adapter, and local bridge transport. The compiled VST3 also passes the separate 24-case host matrix and existing tempo/seek/MIDI/state checks. All six supplied FL comparison records and five Python comparator tests continue to pass.
 
 The clip bridge tests exercise source note IDs, absolute/loop-relative timing, preserved outside/boundary notes, fractional velocity conversion, dirty-editor retention, stale/invalid sessions, rejected and accepted acknowledgements, and disabled duplicate preview/sequencer output. UI tests render the target clip and check Apply/undo enablement. Inspected `build/pianoroll-live-bridge-preview.png`. The staged GUI executable and scripts match the built/source files.
@@ -67,7 +69,7 @@ Current tested DLL SHA-256: `3E281A4222A716A483729C8B7A57C207DB415E4FB494F6C5DDF
 | Check | Result |
 | --- | --- |
 | VST3 scan and instance creation | One Piano Roll 0.3.1 instrument; stereo output, MIDI input/output. |
-| Host configuration matrix | 24/24: 44.1/48/96 kHz × 64/257/1024/8192 samples × real-time/offline flags. |
+| Host configuration matrix | 24/24: 44.1/48/96 kHz Ã— 64/257/1024/8192 samples Ã— real-time/offline flags. |
 | Note output | Exact sample offsets, channels, onset/off pairs, and loop crossing; no unexpected duplicate note events in the fixture. |
 | MIDI passthrough | Input note/channel/sample position preserved through the DLL. |
 | Preview audio | Nonzero finite output within the tested amplitude bounds. |
@@ -78,7 +80,7 @@ Current tested DLL SHA-256: `3E281A4222A716A483729C8B7A57C207DB415E4FB494F6C5DDF
 | Editor factory | Three creation/destruction cycles through the VST3 wrapper. |
 | Existing CTest suites | 3/3: sequencing, editing, processor/editor integration. |
 | MIDI comparator tests | 5/5: known running-status input, exact match, and detection of pitch/count/timing/channel/velocity differences. |
-| Prototype fixture processing | 5/5: actual import → shortcut command → export matched the expected quantize/chop/glue/legato fixtures. |
+| Prototype fixture processing | 5/5: actual import â†’ shortcut command â†’ export matched the expected quantize/chop/glue/legato fixtures. |
 
 Detailed machine-readable results: `binary-host-report.json`, `verification-manifest.json`, and `fl-fixtures/*.prototype-comparison.json`. The host test source is `../tests/VST3HostProbe.cpp`; it uses JUCE hosting but does not link this project's processor/editor code.
 
