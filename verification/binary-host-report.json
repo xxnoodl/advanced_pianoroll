@@ -1,7 +1,7 @@
 {
   "passed": true,
   "plugin": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\build\\PianoRoll_artefacts\\Release\\VST3\\Piano Roll.vst3",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "matrixCases": 24,
   "cases": [
     {

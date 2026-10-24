@@ -22,10 +22,12 @@ A one-time runtime display report is written when the editor is attached to a re
 
 Version 0.4.2 refines the tempo field and dropdown/menu styling, adds a MIDI-routing help icon, and reverses only Alt+wheel vertical zoom: wheel up shrinks rows; wheel down enlarges them. Selected-note velocity edits keep the existing direction. In Host sync the BPM field displays the host's reported tempo and is read-only; disabling sync restores the stored local BPM. Active tempo text edits are protected from timer updates. See `host-test/SYNTH-ROUTING.md` for Live routing/recording and the distinction between a VST3 score editor and a future Live clip companion.
 
+Version 0.5.0 adds the first optional Live clip companion and a shared floating clip editor that does not initialize an audio device. The companion follows the selected MIDI clip while the editor is clean; explicit Apply writes note edits back by ID, with conflict checks. Live plays the clip through its existing instrument. The companion's native AMXD loading and real Live API calls require a manual Live test; passing mocked adapter/file tests does not establish that integration. Typing audition and Space-to-Live transport are not connected in this first clip mode. See [companion/README.md](companion/README.md) for installation, behavior and current limits. The normal VST3 remains independent.
+
 ## Current status
 
 - Windows x64 VST3 and standalone binaries compiled successfully with MSVC and JUCE 8.0.12.
-- Three CTest suites pass: sequencing, editing, and processor/editor integration.
+- Seven CTest suites pass: sequencing, editing, processor/editor integration, clip protocol, Live file bridge, mocked Max API adapter, and local companion transport.
 - Tests exercise preview audio, generated/passthrough MIDI, sample timing, host seek/stop handling, state recall, MIDI/pattern files, quantize, undo/redo, duplicate, and mute.
 - The editor was rendered offscreen, inspected, and included as `build/pianoroll-preview.png`.
 - The baseline 0.1.0 hidden standalone process launch remained running and responsive; audio-device initialization and visible-window interaction were not verified by that check. Version 0.2.0 still requires live-window testing.

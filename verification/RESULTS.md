@@ -1,3 +1,19 @@
+# Verification results - Piano Roll 0.5.0
+
+Built and checked on 2026-10-24 on `feat/live-clip-bridge`. Seven CTest suites pass: sequencing, editing, processor integration, clip protocol, C++ Live bridge, mocked Max API adapter, and local bridge transport. The compiled VST3 also passes the separate 24-case host matrix and existing tempo/seek/MIDI/state checks. All six supplied FL comparison records and five Python comparator tests continue to pass.
+
+The clip bridge tests exercise source note IDs, absolute/loop-relative timing, preserved outside/boundary notes, fractional velocity conversion, dirty-editor retention, stale/invalid sessions, rejected and accepted acknowledgements, and disabled duplicate preview/sequencer output. UI tests render the target clip and check Apply/undo enablement. Inspected `build/pianoroll-live-bridge-preview.png`. The staged GUI executable and scripts match the built/source files.
+
+Native Live integration is pending: structural AMXD checks and a mocked Live API do not prove that Max loads the generated device or accepts its note API calls. The next manual test is device load, Open editor, clip selection and a small Apply. Typing audition, Space-to-Live transport, automatic writes and atomic multi-call undo are not implemented in this first clip mode. The normal VST3 remains independent.
+
+VST3 SHA256: `91816F34460F46209D49D4575F8D44AA08D3FB4399D732DE727D75DFD4E543B4`.
+
+Clip editor SHA256: `1D7B0B8DA17A5B2C85B6507301E44B19D312DF92AB2C3CD614B499B5D15B3F5C`.
+
+Historical results follow.
+
+---
+
 # Verification results - Piano Roll 0.4.2
 
 Built and verified on 2026-10-24. All three CTest suites pass. The compiled VST3 passes the separate 24-case audio host matrix, MIDI, tempo/seek, state and editor lifecycle checks. All six supplied FL comparison records and five Python comparator tests continue to pass.
