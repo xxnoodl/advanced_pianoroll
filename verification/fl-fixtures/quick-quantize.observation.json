@@ -1,0 +1,38 @@
+{
+  "referenceSHA256": "21632bf725138e42f222fc16ef92575dd5c58d04c01fb046b47427e56d392e0c",
+  "notes": [
+    {
+      "pitch": 60,
+      "inputStart": 0.13541666666666666,
+      "inputEnd": 0.7708333333333333,
+      "FLStart": 0.25,
+      "FLEnd": 0.75,
+      "FLDuration": 0.5
+    },
+    {
+      "pitch": 64,
+      "inputStart": 1.1145833333333333,
+      "inputEnd": 1.5208333333333333,
+      "FLStart": 1.0,
+      "FLEnd": 1.5,
+      "FLDuration": 0.5
+    },
+    {
+      "pitch": 67,
+      "inputStart": 2.09375,
+      "inputEnd": 2.8541666666666665,
+      "FLStart": 2.0,
+      "FLEnd": 2.75,
+      "FLDuration": 0.75
+    },
+    {
+      "pitch": 48,
+      "inputStart": 3.0,
+      "inputEnd": 4.0,
+      "FLStart": 3.0,
+      "FLEnd": 4.0,
+      "FLDuration": 1.0
+    }
+  ],
+  "finding": "FL result matches snapping original starts and original ends, rather than rounding durations."
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "snap": "1/4 step",
+    "notes": 47,
+    "prototypePPQ": 960,
+    "FLPPQ": 96,
+    "exactNormalizedNoteMatch": true,
+    "reference": "quick-chop.FL.mid",
+    "referenceSHA256": "e969885d18e0619a0fdc1f1ffe6f2689806649936dff4bcb5051eaeaebe0f3ca"
+  },
+  {
+    "snap": "1/4 beat",
+    "notes": 13,
+    "prototypePPQ": 960,
+    "FLPPQ": 96,
+    "exactNormalizedNoteMatch": true,
+    "reference": "quick-chop.FL2.mid",
+    "referenceSHA256": "17e4dd2963843d175899ebe47f2a192f039e897738362eaf9cf8a8407141f8c8"
+  }
+]

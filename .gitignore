@@ -1,0 +1,17 @@
+/build/
+/build-core/
+/vendor/
+/dist/
+*.zip
+*.user
+
+# Local captures and generated host installs
+/reference/
+/host-test/*
+!/host-test/SYNTH-ROUTING.md
+!/host-test/Ableton-check.md
+__pycache__/
+*.py[cod]
+/verification/*-log.txt
+
+/verification/packaged-*/

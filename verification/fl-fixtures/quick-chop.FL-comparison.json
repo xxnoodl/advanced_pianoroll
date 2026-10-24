@@ -1,0 +1,422 @@
+{
+  "passed": false,
+  "expected": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\quick-chop.expected.mid",
+  "actual": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\quick-chop.FL.mid",
+  "expectedNotes": 13,
+  "actualNotes": 47,
+  "toleranceBeats": 0.010416667666666666,
+  "missingExpectedNotes": [
+    {
+      "start": 0.13541666666666666,
+      "length": 0.25,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.3854166666666667,
+      "length": 0.25,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.6354166666666666,
+      "length": 0.13541666666666666,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 1.1145833333333333,
+      "length": 0.25,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 1.3645833333333333,
+      "length": 0.15625,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 2.09375,
+      "length": 0.25,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.34375,
+      "length": 0.25,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.59375,
+      "length": 0.25,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 3.0,
+      "length": 0.25,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.25,
+      "length": 0.25,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.5,
+      "length": 0.25,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.75,
+      "length": 0.25,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    }
+  ],
+  "unexpectedActualNotes": [
+    {
+      "start": 0.13541666666666666,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.19791666666666666,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.2604166666666667,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.3229166666666667,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.3854166666666667,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.4479166666666667,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.5104166666666666,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.5729166666666666,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.6354166666666666,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.6979166666666666,
+      "length": 0.0625,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 0.7604166666666666,
+      "length": 0.010416666666666666,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 1.1145833333333333,
+      "length": 0.0625,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 1.1770833333333333,
+      "length": 0.0625,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 1.2395833333333333,
+      "length": 0.0625,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 1.3020833333333333,
+      "length": 0.0625,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 1.3645833333333333,
+      "length": 0.0625,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 1.4270833333333333,
+      "length": 0.0625,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 1.4895833333333333,
+      "length": 0.03125,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 2.09375,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.15625,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.21875,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.28125,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.34375,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.40625,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.46875,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.53125,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.59375,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.65625,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.71875,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 2.78125,
+      "length": 0.0625,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 3.0,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.0625,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.125,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.1875,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.25,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.3125,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.375,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.4375,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.5,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.5625,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.625,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.6875,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.75,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.8125,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.875,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    },
+    {
+      "start": 3.9375,
+      "length": 0.0625,
+      "pitch": 48,
+      "velocity": 90,
+      "channel": 1
+    }
+  ],
+  "diagnosticStatus": "superseded: different confirmed snap settings",
+  "prototypeStepBeats": 0.25,
+  "FLStepBeats": 0.0625,
+  "interpretation": "Initial settings mismatch, not a like-for-like algorithm comparison. See quick-chop.verification-summary.json."
+}

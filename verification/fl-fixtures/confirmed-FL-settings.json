@@ -1,0 +1,4 @@
+[
+  { "case": "quick-chop", "file": "quick-chop.FL.mid", "stepBeats": 0.0625, "snap": "1/4 step", "confirmedBy": "user" },
+  { "case": "quick-chop", "file": "quick-chop.FL2.mid", "stepBeats": 0.25, "snap": "1/4 beat", "confirmedBy": "user" }
+]

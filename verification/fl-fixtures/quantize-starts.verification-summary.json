@@ -1,0 +1,10 @@
+{
+  "prototypeVersion": "0.3.1",
+  "snap": "1/4 beat",
+  "notes": 4,
+  "prototypePPQ": 960,
+  "FLPPQ": 96,
+  "exactNormalizedNoteMatch": true,
+  "originalDurationsPreserved": true,
+  "referenceSHA256": "9999e62b7c2b8c8b64e5c5efed4123f596e8789c20edfa6e035af56f9cd5fdcf"
+}

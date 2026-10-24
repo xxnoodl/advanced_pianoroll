@@ -1,0 +1,52 @@
+﻿{
+    "TimestampUtc":  "2026-10-24T14:58:47.7125764Z",
+    "TestedBinary":  "C:\\Users\\zihn\\Documents\\PianoRollVST3\\build\\PianoRoll_artefacts\\Release\\VST3\\Piano Roll.vst3\\Contents\\x86_64-win\\Piano Roll.vst3",
+    "SHA256":  "7AC51A9B9566A6481185DFDCB1C453BE4A2FD76E5A807FE8DA8D307C6E4D3DDC",
+    "BinaryHostChecksPassed":  true,
+    "PrototypeFixtureComparisonsPassed":  5,
+    "FLComparisons":  [
+                          {
+                              "Case":  "quick-quantize",
+                              "Snap":  "1/4 beat (fixture instruction)",
+                              "StepBeats":  0.25,
+                              "ReferenceFile":  "quick-quantize.FL.mid",
+                              "Status":  "matched"
+                          },
+                          {
+                              "Case":  "quantize-starts",
+                              "Snap":  "1/4 beat (fixture instruction)",
+                              "StepBeats":  0.25,
+                              "ReferenceFile":  "quantize-starts.FL.mid",
+                              "Status":  "matched"
+                          },
+                          {
+                              "Case":  "quick-chop",
+                              "Snap":  "1/4 step",
+                              "StepBeats":  0.0625,
+                              "ReferenceFile":  "quick-chop.FL.mid",
+                              "Status":  "matched"
+                          },
+                          {
+                              "Case":  "quick-chop",
+                              "Snap":  "1/4 beat",
+                              "StepBeats":  0.25,
+                              "ReferenceFile":  "quick-chop.FL2.mid",
+                              "Status":  "matched"
+                          },
+                          {
+                              "Case":  "glue",
+                              "Snap":  "1/4 beat (fixture instruction)",
+                              "StepBeats":  0.25,
+                              "ReferenceFile":  "glue.FL.mid",
+                              "Status":  "matched"
+                          },
+                          {
+                              "Case":  "legato",
+                              "Snap":  "1/4 beat (fixture instruction)",
+                              "StepBeats":  0.25,
+                              "ReferenceFile":  "legato.FL.mid",
+                              "Status":  "matched"
+                          }
+                      ],
+    "AbletonSessionTest":  "pending manual host test"
+}

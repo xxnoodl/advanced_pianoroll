@@ -1,0 +1,229 @@
+{
+  "passed": true,
+  "plugin": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\build\\PianoRoll_artefacts\\Release\\VST3\\Piano Roll.vst3",
+  "version": "0.4.2",
+  "matrixCases": 24,
+  "cases": [
+    {
+      "sampleRate": 44100.0,
+      "blockSize": 64,
+      "offline": false,
+      "blocks": 1681,
+      "noteEvents": 10,
+      "peak": 0.18948270380497,
+      "passed": true
+    },
+    {
+      "sampleRate": 44100.0,
+      "blockSize": 64,
+      "offline": true,
+      "blocks": 1681,
+      "noteEvents": 10,
+      "peak": 0.18948270380497,
+      "passed": true
+    },
+    {
+      "sampleRate": 44100.0,
+      "blockSize": 257,
+      "offline": false,
+      "blocks": 419,
+      "noteEvents": 10,
+      "peak": 0.189496874809265,
+      "passed": true
+    },
+    {
+      "sampleRate": 44100.0,
+      "blockSize": 257,
+      "offline": true,
+      "blocks": 419,
+      "noteEvents": 10,
+      "peak": 0.189496874809265,
+      "passed": true
+    },
+    {
+      "sampleRate": 44100.0,
+      "blockSize": 1024,
+      "offline": false,
+      "blocks": 106,
+      "noteEvents": 10,
+      "peak": 0.189496874809265,
+      "passed": true
+    },
+    {
+      "sampleRate": 44100.0,
+      "blockSize": 1024,
+      "offline": true,
+      "blocks": 106,
+      "noteEvents": 10,
+      "peak": 0.189496874809265,
+      "passed": true
+    },
+    {
+      "sampleRate": 44100.0,
+      "blockSize": 8192,
+      "offline": false,
+      "blocks": 14,
+      "noteEvents": 10,
+      "peak": 0.189496874809265,
+      "passed": true
+    },
+    {
+      "sampleRate": 44100.0,
+      "blockSize": 8192,
+      "offline": true,
+      "blocks": 14,
+      "noteEvents": 10,
+      "peak": 0.189496874809265,
+      "passed": true
+    },
+    {
+      "sampleRate": 48000.0,
+      "blockSize": 64,
+      "offline": false,
+      "blocks": 1830,
+      "noteEvents": 10,
+      "peak": 0.189375653862953,
+      "passed": true
+    },
+    {
+      "sampleRate": 48000.0,
+      "blockSize": 64,
+      "offline": true,
+      "blocks": 1830,
+      "noteEvents": 10,
+      "peak": 0.189375653862953,
+      "passed": true
+    },
+    {
+      "sampleRate": 48000.0,
+      "blockSize": 257,
+      "offline": false,
+      "blocks": 456,
+      "noteEvents": 10,
+      "peak": 0.18943327665329,
+      "passed": true
+    },
+    {
+      "sampleRate": 48000.0,
+      "blockSize": 257,
+      "offline": true,
+      "blocks": 456,
+      "noteEvents": 10,
+      "peak": 0.18943327665329,
+      "passed": true
+    },
+    {
+      "sampleRate": 48000.0,
+      "blockSize": 1024,
+      "offline": false,
+      "blocks": 115,
+      "noteEvents": 10,
+      "peak": 0.18943327665329,
+      "passed": true
+    },
+    {
+      "sampleRate": 48000.0,
+      "blockSize": 1024,
+      "offline": true,
+      "blocks": 115,
+      "noteEvents": 10,
+      "peak": 0.18943327665329,
+      "passed": true
+    },
+    {
+      "sampleRate": 48000.0,
+      "blockSize": 8192,
+      "offline": false,
+      "blocks": 15,
+      "noteEvents": 10,
+      "peak": 0.18943327665329,
+      "passed": true
+    },
+    {
+      "sampleRate": 48000.0,
+      "blockSize": 8192,
+      "offline": true,
+      "blocks": 15,
+      "noteEvents": 10,
+      "peak": 0.18943327665329,
+      "passed": true
+    },
+    {
+      "sampleRate": 96000.0,
+      "blockSize": 64,
+      "offline": false,
+      "blocks": 3659,
+      "noteEvents": 10,
+      "peak": 0.183757990598679,
+      "passed": true
+    },
+    {
+      "sampleRate": 96000.0,
+      "blockSize": 64,
+      "offline": true,
+      "blocks": 3659,
+      "noteEvents": 10,
+      "peak": 0.183757990598679,
+      "passed": true
+    },
+    {
+      "sampleRate": 96000.0,
+      "blockSize": 257,
+      "offline": false,
+      "blocks": 912,
+      "noteEvents": 10,
+      "peak": 0.183757990598679,
+      "passed": true
+    },
+    {
+      "sampleRate": 96000.0,
+      "blockSize": 257,
+      "offline": true,
+      "blocks": 912,
+      "noteEvents": 10,
+      "peak": 0.183757990598679,
+      "passed": true
+    },
+    {
+      "sampleRate": 96000.0,
+      "blockSize": 1024,
+      "offline": false,
+      "blocks": 229,
+      "noteEvents": 10,
+      "peak": 0.183757990598679,
+      "passed": true
+    },
+    {
+      "sampleRate": 96000.0,
+      "blockSize": 1024,
+      "offline": true,
+      "blocks": 229,
+      "noteEvents": 10,
+      "peak": 0.183757990598679,
+      "passed": true
+    },
+    {
+      "sampleRate": 96000.0,
+      "blockSize": 8192,
+      "offline": false,
+      "blocks": 29,
+      "noteEvents": 10,
+      "peak": 0.183757990598679,
+      "passed": true
+    },
+    {
+      "sampleRate": 96000.0,
+      "blockSize": 8192,
+      "offline": true,
+      "blocks": 29,
+      "noteEvents": 10,
+      "peak": 0.183757990598679,
+      "passed": true
+    }
+  ],
+  "freshInstanceStateRecall": true,
+  "editorCreations": 3,
+  "continuousTempoChange": true,
+  "seekAndChase": true,
+  "instanceStateIsolation": true
+}

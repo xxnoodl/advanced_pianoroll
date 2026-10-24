@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "expected": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\quick-chop.step-0.062500.prototype.mid",
+  "actual": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\quick-chop.FL.mid",
+  "expectedNotes": 47,
+  "actualNotes": 47,
+  "toleranceBeats": 0.010416667666666666,
+  "missingExpectedNotes": [],
+  "unexpectedActualNotes": []
+}

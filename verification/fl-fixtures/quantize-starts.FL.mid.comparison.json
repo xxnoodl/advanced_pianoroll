@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "expected": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\quantize-starts.prototype.mid",
+  "actual": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\quantize-starts.FL.mid",
+  "expectedNotes": 4,
+  "actualNotes": 4,
+  "toleranceBeats": 0.010416667666666666,
+  "missingExpectedNotes": [],
+  "unexpectedActualNotes": []
+}

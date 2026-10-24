@@ -1,0 +1,38 @@
+{
+  "prototypeVersion": "0.3.1",
+  "notes": 4,
+  "prototypePPQ": 960,
+  "FLPPQ": 96,
+  "exactNormalizedNoteMatch": true,
+  "referenceSHA256": "0af9f0852e997e17740ff4e44f620a077fe41fb401a580b77ada43deea544e83",
+  "FLNotes": [
+    {
+      "start": 0.0,
+      "length": 1.0,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 1.0,
+      "length": 1.0,
+      "pitch": 64,
+      "velocity": 96,
+      "channel": 1
+    },
+    {
+      "start": 2.0,
+      "length": 1.0,
+      "pitch": 67,
+      "velocity": 110,
+      "channel": 1
+    },
+    {
+      "start": 3.0,
+      "length": 1.0,
+      "pitch": 72,
+      "velocity": 100,
+      "channel": 1
+    }
+  ]
+}

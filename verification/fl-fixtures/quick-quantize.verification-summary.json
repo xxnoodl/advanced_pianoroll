@@ -1,0 +1,16 @@
+{
+  "prototypeVersion": "0.3.1",
+  "snap": "1/4 beat",
+  "notes": 4,
+  "prototypePPQ": 960,
+  "FLPPQ": 96,
+  "exactNormalizedNoteMatch": true,
+  "referenceSHA256": "21632bf725138e42f222fc16ef92575dd5c58d04c01fb046b47427e56d392e0c",
+  "firstNote": {
+    "start": 0.25,
+    "length": 0.5,
+    "pitch": 60,
+    "velocity": 80,
+    "channel": 1
+  }
+}

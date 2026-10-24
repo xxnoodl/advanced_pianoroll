@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "expected": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\quick-chop.measured-step.expected.mid",
+  "actual": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\quick-chop.FL.mid",
+  "expectedNotes": 47,
+  "actualNotes": 47,
+  "toleranceBeats": 0.010416667666666666,
+  "missingExpectedNotes": [],
+  "unexpectedActualNotes": [],
+  "comparisonType": "Diagnostic comparison at measured 1/16-beat slice length; snap setting not yet confirmed",
+  "actualPPQ": 96,
+  "actualNoteDurationsBeats": {
+    "0.0625": 44,
+    "0.010416666666666666": 2,
+    "0.03125": 1
+  }
+}

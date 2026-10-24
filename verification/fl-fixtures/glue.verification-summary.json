@@ -1,0 +1,24 @@
+{
+  "prototypeVersion": "0.3.1",
+  "notes": 2,
+  "prototypePPQ": 960,
+  "FLPPQ": 96,
+  "exactNormalizedNoteMatch": true,
+  "referenceSHA256": "8d33c68d7873907be585973b91aec6675434b282556bb14c33f0d60ceb956e73",
+  "FLNotes": [
+    {
+      "start": 0.0,
+      "length": 1.0,
+      "pitch": 60,
+      "velocity": 80,
+      "channel": 1
+    },
+    {
+      "start": 1.0,
+      "length": 0.25,
+      "pitch": 64,
+      "velocity": 100,
+      "channel": 1
+    }
+  ]
+}

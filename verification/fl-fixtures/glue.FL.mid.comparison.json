@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "expected": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\glue.prototype.mid",
+  "actual": "C:\\Users\\zihn\\Documents\\PianoRollVST3\\verification\\fl-fixtures\\glue.FL.mid",
+  "expectedNotes": 2,
+  "actualNotes": 2,
+  "toleranceBeats": 0.010416667666666666,
+  "missingExpectedNotes": [],
+  "unexpectedActualNotes": []
+}

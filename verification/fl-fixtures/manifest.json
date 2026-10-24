@@ -1,0 +1,32 @@
+{
+  "quick-quantize": {
+    "shortcut": "Ctrl+Q",
+    "snap": "1/4 beat (16th note)",
+    "inputNotes": 4,
+    "expectedNotes": 4
+  },
+  "quantize-starts": {
+    "shortcut": "Shift+Q",
+    "snap": "1/4 beat (16th note)",
+    "inputNotes": 4,
+    "expectedNotes": 4
+  },
+  "quick-chop": {
+    "shortcut": "Ctrl+U",
+    "snap": "1/4 beat (16th note)",
+    "inputNotes": 4,
+    "expectedNotes": 13
+  },
+  "glue": {
+    "shortcut": "Ctrl+G",
+    "snap": "1/4 beat (16th note)",
+    "inputNotes": 4,
+    "expectedNotes": 2
+  },
+  "legato": {
+    "shortcut": "Ctrl+L",
+    "snap": "1/4 beat (16th note)",
+    "inputNotes": 4,
+    "expectedNotes": 4
+  }
+}
