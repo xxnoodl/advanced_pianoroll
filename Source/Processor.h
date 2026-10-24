@@ -30,6 +30,7 @@ public:
     juce::Result exportMidi(const juce::File&) const;
     juce::Result savePattern(const juce::File&);
     juce::Result loadPattern(const juce::File&);
+    std::function<void(int,int,bool,int)> externalPreview;
     std::atomic<bool> externalClipMode {false};
     std::atomic<bool> playing {false}, hostSync {false}, monitor {true};
     std::atomic<double> tempo {120}, playhead {0}, reportedHostTempo {0};

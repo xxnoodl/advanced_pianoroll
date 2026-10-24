@@ -61,7 +61,7 @@ void RollCanvas::paint(juce::Graphics& g) {
         }
     }
     g.saveState(); g.reduceClipRegion(gridClip);
-    int end = static_cast<int>(68 + (pattern.loop - offset) * pxBeat);
+    int end = static_cast<int>(68 + (noteLimit() - offset) * pxBeat);
     g.setColour(juce::Colours::black.withAlpha(0.3f)); g.fillRect(end, gridTop, std::max(0, right - end), lane - gridTop);
     for (int i = 0; i < pattern.count; ++i) {
         const auto& n = pattern.notes[static_cast<size_t>(i)]; const auto rect = noteRect(n);

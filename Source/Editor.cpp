@@ -68,8 +68,13 @@ void RollCanvas::checkpoint() {
     history.push_back(pattern); if (history.size() > 64) history.erase(history.begin()); future.clear(); before = pattern;
 }
 void RollCanvas::publish() { processor.writePattern(pattern); seenRevision = processor.revision.load(); repaint(); }
-void RollCanvas::refresh() {
-    if (seenRevision != processor.revision.load()) { processingBaseline.reset(); setEnabled(true); pattern = processor.readPattern(); seenRevision = processor.revision.load(); selected.clear(); history.clear(); future.clear(); rangeStart = rangeEnd = 0; updateScrollbars(); }
+void RollCanvas::refresh(bool retainEditingState) {
+    if(seenRevision!=processor.revision.load()) {
+        processingBaseline.reset();setEnabled(true);pattern=processor.readPattern();seenRevision=processor.revision.load();
+        if(!retainEditingState){selected.clear();history.clear();future.clear();rangeStart=rangeEnd=0;}
+        else {for(auto it=selected.begin();it!=selected.end();){bool found=false;for(int i=0;i<pattern.count;++i)found|=pattern.notes[static_cast<size_t>(i)].id==*it;if(found)++it;else it=selected.erase(it);}}
+        updateScrollbars();
+    }
     repaint();
 }
 void RollCanvas::undo(bool redo) {
@@ -79,17 +84,18 @@ void RollCanvas::undo(bool redo) {
 }
 void RollCanvas::deleteAt(juce::Point<float> point) { int i = hit(point); if (i >= 0) { selected.erase(pattern.notes[static_cast<size_t>(i)].id); pattern.remove(i); publish(); } }
 void RollCanvas::addAt(const juce::MouseEvent& e) {
-    double beat = std::clamp(snapped(beatAt(e.position.x), e.mods), 0.0, pattern.loop - 1.0 / 960);
+    if(externalClipLimit>0 && beatAt(e.position.x)>=noteLimit())return;
+    double beat = std::clamp(snapped(beatAt(e.position.x), e.mods), 0.0, noteLimit() - 1.0 / 960);
     int pitch = pitchAt(e.position.y);
     if (stampIndex >= 0 && stampIndex < static_cast<int>(pr::stamps().size())) {
-        if (!pr::placeStamp(pattern, pr::stamps()[static_cast<size_t>(stampIndex)], beat, lastLength, pitch, channel, selected)) { status = "Stamp exceeds pitch or note capacity limits."; return; }
+        if (!pr::placeStamp(pattern, pr::stamps()[static_cast<size_t>(stampIndex)], beat, std::min(lastLength,noteLimit()-beat), pitch, channel, selected)) { status = "Stamp exceeds pitch or note capacity limits."; return; }
         status = "Stamped " + juce::String(pr::stamps()[static_cast<size_t>(stampIndex)].name);
         if (stampOnlyOnce) stampIndex = -1;
         if (onStampChanged) onStampChanged(); publish(); return;
     }
     for (int i = 0; i < pattern.count; ++i) { const auto& n = pattern.notes[static_cast<size_t>(i)]; if (n.pitch == pitch && std::abs(n.start - beat) < 0.001 && n.channel == channel) return; }
     uint32_t id = pattern.nextId;
-    if (pattern.add({0, beat, std::min(lastLength, pattern.loop - beat), pitch, 100, channel, false})) { selected.clear(); selected.insert(id); publish(); }
+    if (pattern.add({0, beat, std::min(lastLength, noteLimit() - beat), pitch, 100, channel, false})) { selected.clear(); selected.insert(id); publish(); }
     else status = "Pattern is full (2048 notes).";
 }
 void RollCanvas::velocityAt(juce::Point<float> point) {
@@ -196,7 +202,7 @@ void RollCanvas::mouseDrag(const juce::MouseEvent& e) {
     if (gesture == move) {
         double min = -pattern.loop, max = pattern.loop; int minPitch = -127, maxPitch = 127;
         for (int i = 0; i < before.count; ++i) { const auto& n = before.notes[static_cast<size_t>(i)]; if (!selected.count(n.id)) continue;
-            min = std::max(min, -n.start); max = std::min(max, pattern.loop - n.start - n.length);
+            min = std::max(min, -n.start); max = std::min(max, noteLimit() - n.start - n.length);
             minPitch = std::max(minPitch, -n.pitch); maxPitch = std::min(maxPitch, 127 - n.pitch);
         }
         delta = std::clamp(delta, min, max); semitones = std::clamp(semitones, minPitch, maxPitch);
@@ -204,7 +210,7 @@ void RollCanvas::mouseDrag(const juce::MouseEvent& e) {
     for (int i = 0; i < pattern.count; ++i) {
         auto& n = pattern.notes[static_cast<size_t>(i)]; const auto& old = before.notes[static_cast<size_t>(i)]; if (!selected.count(n.id)) continue;
         if (gesture == move) { n.start = old.start + delta; n.pitch = old.pitch + semitones; }
-        else { n.length = std::clamp(old.length + delta, 1.0 / 960, pattern.loop - old.start); lastLength = n.length; }
+        else { n.length = std::clamp(old.length + delta, 1.0 / 960, noteLimit() - old.start); lastLength = n.length; }
     }
     if (gesture == move && audition >= 0 && dragPitch + semitones != audition) {
         processor.preview(audition, 0, false); audition = dragPitch + semitones; processor.preview(audition, 100, true);
@@ -254,7 +260,7 @@ void RollCanvas::quantize(bool ends) {
 }
 void RollCanvas::legato() {
     checkpoint(); for (int i = 0; i < pattern.count; ++i) { auto& n = pattern.notes[static_cast<size_t>(i)]; if (!selected.empty() && !selected.count(n.id)) continue;
-        double end = pattern.loop;
+        double end = noteLimit();
         for (int j = 0; j < pattern.count; ++j) { const auto& next = pattern.notes[static_cast<size_t>(j)]; if (next.channel == n.channel && next.start > n.start + 0.001) end = std::min(end, next.start); }
         n.length = end - n.start;
     } publish();
@@ -273,16 +279,14 @@ void RollCanvas::paste(bool duplicate) {
     double first = pattern.loop, end = 0;
     for (const auto& n : clipboard) { first = std::min(first, n.start); end = std::max(end, n.start + n.length); }
     double shift = duplicate ? end - first : std::max(0.0, pr::snap(processor.playhead.load(), step)) - first;
-    if (end + shift > pattern.loop) { status = "Extend the loop before duplicating past its end."; return; }
+    if (end + shift > noteLimit()) { status = "Extend the loop before duplicating past its end."; return; }
     checkpoint(); selected.clear();
     for (auto n : clipboard) { n.start += shift; uint32_t id = pattern.nextId; pattern.add(n); selected.insert(id); } publish();
 }
 bool RollCanvas::keyPressed(const juce::KeyPress& key) {
     const int code = key.getKeyCode(); bool command = key.getModifiers().isCommandDown() || key.getModifiers().isCtrlDown();
     if (processingBaseline) return true;
-    if (processor.externalClipMode.load() && ((command && code == 'T') || code == juce::KeyPress::spaceKey)) {
-        status="Clip mode: play the clip in Live to hear its instrument."; return true;
-    }
+    if(processor.externalClipMode.load() && code==juce::KeyPress::spaceKey){if(onExternalTransport)onExternalTransport();return true;}
     if (command && code == 'T') { setTypingEnabled(!typingEnabled); return true; }
     if (typingEnabled && !command && !key.getModifiers().isAltDown()
         && typingState.press(code, typingOctave, channel, typingVelocity,
@@ -334,7 +338,7 @@ bool RollCanvas::keyPressed(const juce::KeyPress& key) {
     if (code == juce::KeyPress::upKey || code == juce::KeyPress::downKey || code == juce::KeyPress::leftKey || code == juce::KeyPress::rightKey) {
         checkpoint(); for (int i = 0; i < pattern.count; ++i) { auto& n = pattern.notes[static_cast<size_t>(i)]; if (!selected.count(n.id)) continue;
             if (code == juce::KeyPress::upKey || code == juce::KeyPress::downKey) n.pitch = std::clamp(n.pitch + (code == juce::KeyPress::upKey ? 1 : -1) * (command ? 12 : 1), 0, 127);
-            else n.start = std::clamp(n.start + (code == juce::KeyPress::rightKey ? 1 : -1) * (step > 0 ? step : 1.0 / 960), 0.0, pattern.loop - n.length);
+            else n.start = std::clamp(n.start + (code == juce::KeyPress::rightKey ? 1 : -1) * (step > 0 ? step : 1.0 / 960), 0.0, noteLimit() - n.length);
         } publish(); return true;
     }
     return false;
@@ -397,11 +401,12 @@ PianoRollEditor::PianoRollEditor(PianoRollProcessor& p) : AudioProcessorEditor(p
     bpm.setSliderSnapsToMousePosition(false); bpm.setMouseDragSensitivity(560); bpm.setNumDecimalPlacesToDisplay(1);
     bpm.setTooltip("Local tempo: drag vertically or double-click to type. Host sync follows the DAW tempo.");
     bpm.onValueChange = [this] { processor.tempo.store(bpm.getValue()); };
-    play.onClick = [this] { processor.playing.store(!processor.playing.load()); roll.grabKeyboardFocus(); };
-    host.setClickingTogglesState(true); host.setToggleState(processor.hostSync.load(), juce::dontSendNotification);
+    play.onClick = [this] { if(liveBridge.active()){auto result=liveBridge.toggleTransport();if(result.failed())liveBridge.message=result.getErrorMessage();}else processor.playing.store(!processor.playing.load());roll.grabKeyboardFocus(); };
+    roll.onExternalTransport=[this]{play.onClick();};
+    host.setClickingTogglesState(true); host.setToggleState(liveBridge.active()||processor.hostSync.load(), juce::dontSendNotification);
     host.onClick = [this] { processor.hostSync.store(host.getToggleState()); processor.playing.store(false); };
-    monitor.setClickingTogglesState(true); monitor.setToggleState(processor.monitor.load(), juce::dontSendNotification);
-    monitor.onClick = [this] { processor.monitor.store(monitor.getToggleState()); };
+    monitor.setClickingTogglesState(true); monitor.setToggleState(liveBridge.active()?liveBridge.auditionEnabled:processor.monitor.load(), juce::dontSendNotification);
+    monitor.onClick = [this] { if(liveBridge.active()){liveBridge.auditionEnabled=monitor.getToggleState();if(!liveBridge.auditionEnabled)liveBridge.panic();}else processor.monitor.store(monitor.getToggleState()); };
     routing.setTooltip("Route MIDI to another synth");
     routing.onClick = [this] {
         juce::AlertWindow::showMessageBoxAsync(juce::MessageBoxIconType::InfoIcon, "Play another instrument",
@@ -441,7 +446,7 @@ PianoRollEditor::PianoRollEditor(PianoRollProcessor& p) : AudioProcessorEditor(p
         "Draw: click to add, drag notes to move, drag the right edge to resize.\nRight-click/drag: erase. Shift-drag: clone. Alt: bypass snap.\nSelect tool or Ctrl-drag: box select. Ctrl-click: select. Shift: add selection.\nVelocity lane: drag stems; selecting notes links their velocity edits.\nWheel: scroll pitch. Shift-wheel: scroll time. Ctrl-wheel: zoom time. Alt-wheel: zoom pitch; over selected notes: velocity. Ctrl+Alt-wheel: fine velocity.\nOverview/scrollbars navigate. Drag the velocity divider to resize.\nDrag the ruler for a visual time range; right-click the ruler to clear it. The range does not change playback-loop bounds yet.\nCtrl+A/C/X/V: select/copy/cut/paste. Ctrl+B: duplicate after selection.\nCtrl+Z/Y: undo/redo. Arrows: move; Ctrl+Up/Down: octave.\nCtrl+Q: quantize. Shift+Q: quantize starts. Ctrl+L: legato. Ctrl+U: chop. Ctrl+G: glue.\nAlt+M: mute selected. Alt+Shift+M: unmute. P/B/C/E/T: draw/paint/slice/select/mute (typing piano OFF). Ctrl+T: toggle full typing piano.\nStamp chooses a chord/scale preset. Tools opens processing previews with Accept/Cancel.\nDelete: remove. Space: local playback.\nHost sync follows the DAW transport. Preview synth can be muted while MIDI is routed to another instrument.\nThis version supports up to 32 bars in 4/4 and 2048 notes."); };
     setResizable(true, true); setResizeLimits(1080, 700, 3200, 2200); setSize(1280, 860); roll.setReadableRows(); roll.fit(); startTimerHz(30);
 }
-PianoRollEditor::~PianoRollEditor() { stopTimer(); roll.releaseTyping(); setLookAndFeel(nullptr); }
+PianoRollEditor::~PianoRollEditor() { stopTimer(); roll.releaseTyping();liveBridge.panic();processor.externalPreview={};setLookAndFeel(nullptr); }
 void PianoRollEditor::paint(juce::Graphics& g) {
     g.fillAll(background);
     g.addTransform(juce::AffineTransform::scale(interfaceScale));
@@ -480,23 +485,36 @@ void PianoRollEditor::resized() {
 juce::Result PianoRollEditor::connectLiveBridge(const juce::File& folder) {
     auto result=liveBridge.connect(folder);
     if(result.wasOk()) {
-        liveReload.setVisible(true); liveApply.setVisible(true); liveTarget.setVisible(true); roll.releaseTyping(); roll.setTypingEnabled(false);
+        liveReload.setVisible(true); liveApply.setVisible(false); liveTarget.setVisible(true); roll.releaseTyping(); roll.setTypingEnabled(false);
+        roll.externalClipLimit=liveBridge.loopLength();
         roll.channel=1; roll.refresh(); roll.fit(); resized();
-        typing.setTooltip("Typing audition through Live is not connected in this first clip bridge. Play the clip in Live to hear its synth.");
+        processor.externalPreview=[this](int pitch,int velocity,bool on,int channel){liveBridge.preview(pitch,velocity,on,channel);};
+        typing.setTooltip("Ctrl+T: play the selected Live instrument with the FL-style typing keyboard.");
+        play.setTooltip("Play or stop Live (Space)");monitor.setTooltip("Audition notes through the selected Live instrument");
         roll.status=liveBridge.message; refreshControls();
     } else roll.status=result.getErrorMessage();
     return result;
 }
 void PianoRollEditor::refreshControls() {
     if(liveBridge.active()) {
-        if(++bridgePoll%6==0) { const auto previous=liveBridge.targetId(); const bool changed=liveBridge.poll(); if(changed) {roll.refresh();if(previous!=liveBridge.targetId())roll.fit();} }
-        roll.setEnabled(liveBridge.hasClip() && !liveBridge.waiting() && !roll.isProcessing());
-        liveApply.setEnabled(liveBridge.dirty() && !liveBridge.waiting() && !roll.isProcessing());
-        liveReload.setEnabled(!liveBridge.waiting());
-        for (auto* action : {&undo,&redo,&stamp,&processing}) action->setEnabled(liveBridge.hasClip() && !liveBridge.waiting() && !roll.isProcessing());
-        for(auto* c : std::initializer_list<juce::Component*>{&play,&host,&monitor,&typing,&typingOctave,&typingVelocity,&bars,&channels,&bpm,&importButton,&load}) c->setEnabled(false);
-        liveTarget.setText(liveBridge.clipName.isEmpty()?"Select a MIDI clip in Live":"Live clip: "+liveBridge.clipName,juce::dontSendNotification);
-        roll.status=liveBridge.message + (liveBridge.dirty()?" / unapplied edits":"");
+        liveBridge.updatePlayback();
+        if(++bridgePoll%3==0 && !roll.isGestureActive() && !roll.isProcessing()) {
+            const auto previous=liveBridge.targetId();const bool changed=liveBridge.poll();
+            if(changed){roll.externalClipLimit=liveBridge.loopLength();const bool same=previous==liveBridge.targetId();if(!same)roll.releaseTyping();roll.refresh(same&&liveBridge.lastPollWasAck());if(!same)roll.fit();}
+        }
+        const auto revision=processor.revision.load();const auto now=juce::Time::getMillisecondCounterHiRes();
+        if(revision!=autoRevision){autoRevision=revision;autoChangedAt=now;}
+        if(liveBridge.dirty()&&!liveBridge.waiting()&&!liveBridge.autoSyncPaused()&&!roll.isGestureActive()&&!roll.isProcessing()&&now-autoChangedAt>180) {
+            auto result=liveBridge.apply();if(result.failed())liveBridge.message=result.getErrorMessage();
+        }
+        roll.setEnabled(liveBridge.hasClip() && !roll.isProcessing());
+        liveApply.setVisible(liveBridge.autoSyncPaused());liveApply.setTooltip("Retry note sync");
+        liveApply.setEnabled(liveBridge.dirty()&&!liveBridge.waiting()&&!roll.isProcessing());liveReload.setEnabled(!liveBridge.waiting());
+        for(auto* action:{&undo,&redo,&stamp,&processing})action->setEnabled(liveBridge.hasClip()&&!roll.isProcessing());
+        for(auto* c:std::initializer_list<juce::Component*>{&host,&bars,&channels,&bpm,&importButton,&load})c->setEnabled(false);
+        typing.setEnabled(liveBridge.hasClip());typingOctave.setEnabled(liveBridge.hasClip());typingVelocity.setEnabled(liveBridge.hasClip());monitor.setEnabled(liveBridge.hasClip());
+        liveTarget.setText(liveBridge.clipName.isEmpty()?"Select a MIDI track in Live":"Live: "+liveBridge.clipName,juce::dontSendNotification);
+        roll.status=liveBridge.message+(liveBridge.dirty()?" / syncing edits":"");
     }
 
     if (!displayDiagnosticsWritten && getPeer() != nullptr) {
@@ -509,12 +527,12 @@ void PianoRollEditor::refreshControls() {
         file.getParentDirectory().createDirectory(); file.replaceWithText(juce::JSON::toString(juce::var(data.release())));
         displayDiagnosticsWritten = true;
     }
-    roll.pollTyping(); roll.refresh(); play.setButtonText(processor.playing.load() ? "Stop" : "Play"); play.setEnabled(!processor.hostSync.load() && !liveBridge.active());
+    roll.pollTyping(); roll.refresh(); play.setButtonText(processor.playing.load() ? "Stop" : "Play"); play.setEnabled(liveBridge.active()?(liveBridge.hasClip()&&liveBridge.connected()):!processor.hostSync.load());
     for (size_t i = 0; i < toolButtons.size(); ++i) toolButtons[i].setToggleState(static_cast<int>(roll.tool) == static_cast<int>(i), juce::dontSendNotification);
     play.setToggleState(processor.playing.load(), juce::dontSendNotification);
     tools.setSelectedId(static_cast<int>(roll.tool) + 1, juce::dontSendNotification);
-    host.setToggleState(processor.hostSync.load(), juce::dontSendNotification); monitor.setToggleState(processor.monitor.load(), juce::dontSendNotification);
-    const bool followsHost = processor.hostSync.load();
+    host.setToggleState(liveBridge.active()||processor.hostSync.load(), juce::dontSendNotification); monitor.setToggleState(liveBridge.active()?liveBridge.auditionEnabled:processor.monitor.load(), juce::dontSendNotification);
+    const bool followsHost = liveBridge.active()||processor.hostSync.load();
     bpm.setEnabled(!followsHost && !liveBridge.active());
     const double hostTempo = processor.reportedHostTempo.load();
     bool tempoEditing = false;

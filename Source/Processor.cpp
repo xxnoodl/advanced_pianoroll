@@ -24,7 +24,7 @@ void PianoRollProcessor::writePattern(const pr::Pattern& p) {
     const juce::SpinLock::ScopedLockType lock(patternLock); pattern = p; revision.fetch_add(1);
 }
 void PianoRollProcessor::preview(int pitch, int velocity, bool on, int channel) {
-    if (externalClipMode.load()) return;
+    if (externalClipMode.load()) { if(externalPreview)externalPreview(pitch,velocity,on,channel); return; }
     auto m = on ? juce::MidiMessage::noteOn(channel, pitch, static_cast<juce::uint8>(velocity)) : juce::MidiMessage::noteOff(channel, pitch);
     m.setTimeStamp(juce::Time::getMillisecondCounterHiRes() * 0.001); previews.addMessageToQueue(m);
 }

@@ -19,7 +19,9 @@ public:
     void mouseUp(const juce::MouseEvent&) override;
     void mouseWheelMove(const juce::MouseEvent&, const juce::MouseWheelDetails&) override;
     bool keyPressed(const juce::KeyPress&) override;
-    void refresh();
+    void refresh(bool retainEditingState = false);
+    bool isGestureActive() const { return gesture != none; }
+    std::function<void()> onExternalTransport;
     bool keyStateChanged(bool) override;
     void focusLost(FocusChangeType) override;
     void setTypingEnabled(bool);
@@ -58,7 +60,7 @@ public:
     std::function<void()> onStampChanged;
     enum Tool { draw, paintNotes, select, mute, slice };
     Tool tool = draw;
-    double step = 0.25;
+    double step = 0.25, externalClipLimit = 0;
     int channel = 1, scale = 0, root = 0;
     juce::String status;
     juce::Range<double> timeSelection() const { return {rangeStart, rangeEnd}; }
@@ -84,6 +86,7 @@ private:
     juce::Point<float> down, current;
     enum Gesture { none, move, resizeNote, marquee, erase, velocity, painting, keys, overview, timeRange, laneResize } gesture = none;
     int laneTop() const { return std::max(gridTop + 48, getHeight() - velocityHeight - 14); }
+    double noteLimit() const { return externalClipLimit>0?std::min(pattern.loop,externalClipLimit):pattern.loop; }
     double beatAt(float x) const { return offset + (x - 68) / pxBeat; }
     int pitchAt(float y) const { return std::clamp(topPitch - static_cast<int>(std::floor((y - gridTop) / row)), 0, 127); }
     juce::Rectangle<float> noteRect(const pr::Note&) const;
@@ -171,6 +174,8 @@ private:
     LiveClipBridge liveBridge;
     juce::TextButton liveReload {"Reload selected Live clip"}, liveApply {"Apply edits to Live clip"};
     int bridgePoll = 0;
+    uint64_t autoRevision = 0;
+    double autoChangedAt = 0;
     juce::Label liveTarget;
     juce::TextButton play {"Play"}, host {"Host sync"}, monitor {"Preview synth"};
     juce::TextButton undo {"Undo"}, redo {"Redo"}, stamp {"Stamp"}, processing {"Tools"}, fit {"Fit"};
