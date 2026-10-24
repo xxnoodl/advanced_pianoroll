@@ -32,8 +32,9 @@ if ($LASTEXITCODE -ne 0) { throw "CMake configuration failed. If GitHub is unrea
 if ($LASTEXITCODE -ne 0) { throw "Compilation failed." }
 $ctestPath = Join-Path (Split-Path -Parent $cmakePath) 'ctest.exe'
 & $ctestPath --test-dir $buildPath -C $Configuration --output-on-failure
-if ($LASTEXITCODE -ne 0) { throw "Sequencing tests failed." }
+if ($LASTEXITCODE -ne 0) { throw "Tests failed." }
 if (-not $CoreOnly) {
+    Write-Output "Clip editor: $buildPath\PianoRollClipEditor_artefacts\$Configuration\Piano Roll Clip Editor.exe"
     Write-Output "Standalone: $buildPath\PianoRoll_artefacts\$Configuration\Standalone\Piano Roll.exe"
     Write-Output "VST3 bundle: $buildPath\PianoRoll_artefacts\$Configuration\VST3\Piano Roll.vst3"
 }

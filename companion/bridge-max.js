@@ -1,4 +1,4 @@
-﻿/* Max's low-priority Live API adapter. */
+/* Max's low-priority Live API adapter. */
 autowatch = 1;
 inlets = 1;
 outlets = 2;
@@ -10,6 +10,7 @@ function session(id) { bridgeSession = String(id); if (bridgeReady) loadclip(); 
 function scalar(value) { return Array.isArray(value) ? value[value.length-1] : value; }
 function dictionary(value) {
     if (value && value.notes) return value;
+    if (value && typeof value.stringify === 'function') return JSON.parse(value.stringify());
     if (Array.isArray(value) && value[0] === 'dictionary') return JSON.parse(new Dict(value[1]).stringify());
     if (Array.isArray(value) && value.length === 1) value = value[0];
     if (typeof value === 'string') return JSON.parse(value);
@@ -26,7 +27,7 @@ function selected() {
 }
 function capture() {
     var api = selected(), notes = dictionary(api.call('get_all_notes_extended'));
-    return ClipProtocol.validateClip({protocol:1,session:bridgeSession,clipId:String(api.id),name:String(scalar(api.get('name'))),
+    return ClipProtocol.validateClip({protocol:1,session:bridgeSession,clipId:String(api.id),name:String(api.getstring('name')),
         loopStart:Number(scalar(api.get('loop_start'))),loopEnd:Number(scalar(api.get('loop_end'))),notes:notes.notes});
 }
 function publish(force) {
@@ -39,8 +40,8 @@ function publish(force) {
     status('Selected: ' + clip.name + ' / ' + ClipProtocol.editable(clip).length + ' editable notes');
 }
 function loadclip() { try { publish(true); } catch (e) { status(e.message); outlet(0,'unavailable',e.message); } }
-function poll() { try { publish(false); } catch (e) { status(e.message); outlet(0,'unavailable',e.message); } }
-function openeditor() { loadclip(); if (baseline) outlet(0,'openeditor'); }
+function poll() { try { publish(false); } catch (e) { lastFingerprint=''; status(e.message); outlet(0,'unavailable',e.message); } }
+function openeditor() { poll(); outlet(0,'openeditor'); }
 function result(value) { outlet(0,'result',JSON.stringify(value)); }
 function apply(text) {
     var request, reply;
@@ -60,8 +61,14 @@ function apply(text) {
         var after = capture();
         var expected = request.notes.map(function(n){return [n.pitch,n.start_time,n.duration,n.velocity,n.mute];});
         var actual = ClipProtocol.editable(after).map(function(n){return [n.pitch,n.start_time,n.duration,Math.round(n.velocity),!!n.mute];});
-        function sorted(a) { return a.map(ClipProtocol.canonical).sort().join('|'); }
-        if (sorted(expected) !== sorted(actual)) throw new Error('Live did not confirm all edits. Inspect the clip and use Live Undo if needed, then reload.');
+        function sortNotes(a) { return a.sort(function(x,y) { for(var i=0;i<5;i++) if(x[i]!==y[i]) return Number(x[i])-Number(y[i]); return 0; }); }
+        sortNotes(expected); sortNotes(actual);
+        var confirmed=expected.length===actual.length;
+        for(var i=0;confirmed && i<expected.length;i++) for(var j=0;j<5;j++) {
+            if(j===1 || j===2) confirmed=confirmed && Math.abs(expected[i][j]-actual[i][j])<1e-7;
+            else confirmed=confirmed && expected[i][j]===actual[i][j];
+        }
+        if (!confirmed) throw new Error('Live did not confirm all edits. Inspect the clip and use Live Undo if needed, then reload.');
         publish(true);
         reply = {protocol:1,session:bridgeSession,requestId:request.requestId,ok:true,revision:baseline.revision,message:'Applied to '+baseline.name};
     } catch(e) {

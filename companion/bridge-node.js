@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
@@ -41,8 +41,9 @@ function start(maxApi) {
             }
         } catch(e){status(e.message);}
     },250);
+    atomic('heartbeat.json',{protocol:1,session,timeMs:Date.now(),available:false});
     boot();
     return {folder,session,stop(){clearInterval(timer);atomic('heartbeat.json',{protocol:1,session,timeMs:0,available:false});}};
 }
 module.exports={start};
-if(require.main===module) start(require('max-api'));
+if(require.main===module || process.env.MAX_ENV) start(require('max-api'));

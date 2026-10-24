@@ -3,6 +3,7 @@
 #include "Stamps.h"
 #include "TypingKeyboard.h"
 #include "Icons.h"
+#include "LiveClipBridge.h"
 #include <set>
 #include <vector>
 
@@ -45,6 +46,7 @@ public:
     void showProcessingMenu(juce::Component* anchor = nullptr);
     enum class ProcessTool { quantize, chop, strum, randomVelocity, scaleVelocity, lfoVelocity };
     struct ProcessSettings { double a = 0, b = 0, c = 0, d = 0; int choice = 0; bool toggle = false; };
+    bool isProcessing() const { return processingBaseline != nullptr; }
     bool beginProcessing();
     bool previewProcessing(ProcessTool, const ProcessSettings&);
     void acceptProcessing();
@@ -161,9 +163,15 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
     void refreshControls();
+    juce::Result connectLiveBridge(const juce::File&);
+    bool hasUnappliedClipEdits() const { return liveBridge.dirty(); }
 private:
     PianoRollProcessor& processor;
     RollCanvas roll;
+    LiveClipBridge liveBridge;
+    juce::TextButton liveReload {"Reload selected Live clip"}, liveApply {"Apply edits to Live clip"};
+    int bridgePoll = 0;
+    juce::Label liveTarget;
     juce::TextButton play {"Play"}, host {"Host sync"}, monitor {"Preview synth"};
     juce::TextButton undo {"Undo"}, redo {"Redo"}, stamp {"Stamp"}, processing {"Tools"}, fit {"Fit"};
     juce::TextButton importButton {"Import MIDI"}, exportButton {"Export MIDI"}, save {"Save"}, load {"Open"}, help {"?"};

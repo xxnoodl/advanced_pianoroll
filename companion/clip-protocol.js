@@ -1,4 +1,4 @@
-﻿// Shared, dependency-free clip validation/diff logic. ES5 syntax also runs in Max's js engine.
+// Shared, dependency-free clip validation/diff logic. ES5 syntax also runs in Max's js engine.
 (function (root) {
     'use strict';
     function fail(message) { throw new Error(message); }
@@ -39,12 +39,13 @@
         var existing = {}, used = {}, locals = {}, modifications = [], additions = [], removals = [];
         editable(base).forEach(function(n) { existing[n.note_id] = n; });
         request.notes.forEach(function(n) {
-            if (!integer(n.localId) || n.localId <= 0 || locals[n.localId]) fail('Repeated editor note ID.');
+            if (!integer(n.localId) || n.localId <= 0 || n.localId > 4294967295 || locals[n.localId]) fail('Repeated editor note ID.');
             locals[n.localId] = true;
-            if (!integer(n.pitch) || n.pitch < 0 || n.pitch > 127 || !finite(n.start_time) || !finite(n.duration) || n.duration < 1/960
+            if (!integer(n.pitch) || n.pitch < 0 || n.pitch > 127 || !finite(n.start_time) || !finite(n.duration) || n.duration <= 0
                 || n.start_time < base.loopStart-1e-8 || n.start_time+n.duration > base.loopEnd+1e-8
                 || !integer(n.velocity) || n.velocity < 0 || n.velocity > 127 || typeof n.mute !== 'boolean') fail('An edited note is outside the clip bounds or supported ranges.');
             var item = {pitch:n.pitch,start_time:n.start_time,duration:n.duration,velocity:n.velocity,mute:n.mute};
+            if (!integer(n.sourceId) || n.sourceId < 0 || n.sourceId > 9007199254740991) fail('Invalid source note ID.');
             if (!n.sourceId) { additions.push(item); return; }
             if (!existing[n.sourceId] || used[n.sourceId]) fail('Unknown or repeated source note ID.');
             used[n.sourceId] = true;

@@ -24,6 +24,7 @@ void PianoRollProcessor::writePattern(const pr::Pattern& p) {
     const juce::SpinLock::ScopedLockType lock(patternLock); pattern = p; revision.fetch_add(1);
 }
 void PianoRollProcessor::preview(int pitch, int velocity, bool on, int channel) {
+    if (externalClipMode.load()) return;
     auto m = on ? juce::MidiMessage::noteOn(channel, pitch, static_cast<juce::uint8>(velocity)) : juce::MidiMessage::noteOff(channel, pitch);
     m.setTimeStamp(juce::Time::getMillisecondCounterHiRes() * 0.001); previews.addMessageToQueue(m);
 }
@@ -62,6 +63,7 @@ void PianoRollProcessor::processBlock(juce::AudioBuffer<float>& audio, juce::Mid
         if (lock.isLocked()) { audioPattern = pattern; audioRevision = revision.load(); changed = true; }
     }
     bool running = playing.load(), sync = hostSync.load();
+    if (externalClipMode.load()) { running = false; sync = false; }
     double bpm = std::clamp(tempo.load(), 20.0, 300.0), beat = localBeat;
     double hostTempo = 0;
     if (sync) {

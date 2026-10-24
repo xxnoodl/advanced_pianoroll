@@ -280,6 +280,9 @@ void RollCanvas::paste(bool duplicate) {
 bool RollCanvas::keyPressed(const juce::KeyPress& key) {
     const int code = key.getKeyCode(); bool command = key.getModifiers().isCommandDown() || key.getModifiers().isCtrlDown();
     if (processingBaseline) return true;
+    if (processor.externalClipMode.load() && ((command && code == 'T') || code == juce::KeyPress::spaceKey)) {
+        status="Clip mode: play the clip in Live to hear its instrument."; return true;
+    }
     if (command && code == 'T') { setTypingEnabled(!typingEnabled); return true; }
     if (typingEnabled && !command && !key.getModifiers().isAltDown()
         && typingState.press(code, typingOctave, channel, typingVelocity,
@@ -339,7 +342,7 @@ bool RollCanvas::keyPressed(const juce::KeyPress& key) {
 
 #include "EditorProcessing.inc"
 
-PianoRollEditor::PianoRollEditor(PianoRollProcessor& p) : AudioProcessorEditor(p), processor(p), roll(p) {
+PianoRollEditor::PianoRollEditor(PianoRollProcessor& p) : AudioProcessorEditor(p), processor(p), roll(p), liveBridge(p) {
     look.setColour(juce::ResizableWindow::backgroundColourId, background);
     look.setColour(juce::TextButton::buttonColourId, panel);
     look.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xff547a4b));
@@ -363,6 +366,19 @@ PianoRollEditor::PianoRollEditor(PianoRollProcessor& p) : AudioProcessorEditor(p
         b.getProperties().set("icon",toolNames[i]); b.setName(toolNames[i]); b.setTooltip(toolNames[i]); b.setComponentID("tool-"+toolNames[i]);
         b.onClick = [this,i] { roll.tool = static_cast<RollCanvas::Tool>(i); roll.grabKeyboardFocus(); };
     }
+    for (auto* b : {&liveReload,&liveApply}) { addChildComponent(b); b->setWantsKeyboardFocus(false); b->setTooltip(b->getButtonText()); b->setName(b->getButtonText()); }
+    addChildComponent(liveTarget); liveTarget.setComponentID("live-target"); liveTarget.setFont(juce::Font(juce::FontOptions("Segoe UI",13.f,juce::Font::plain)));
+    liveTarget.setColour(juce::Label::textColourId,accent); liveTarget.setInterceptsMouseClicks(false,false);
+    liveReload.getProperties().set("icon","import"); liveApply.getProperties().set("icon","export");
+    liveReload.setComponentID("live-reload"); liveApply.setComponentID("live-apply");
+    liveApply.onClick = [this] { auto result=liveBridge.apply(); if(result.failed()) liveBridge.message=result.getErrorMessage(); refreshControls(); };
+    liveReload.onClick = [this] {
+        if (liveBridge.waiting()) return;
+        juce::Component::SafePointer<PianoRollEditor> safeEditor(this);
+        auto reload=[safeEditor](int accepted) { if(safeEditor && accepted) { safeEditor->liveBridge.poll(true); safeEditor->roll.refresh(); safeEditor->roll.fit(); } };
+        if (liveBridge.dirty()) juce::AlertWindow::showOkCancelBox(juce::MessageBoxIconType::QuestionIcon,"Reload Live clip","Discard unapplied editor changes and load the selected Live clip?","Reload","Cancel",this,juce::ModalCallbackFunction::create(reload));
+        else reload(1);
+    };
     toolButtons[0].setToggleState(true, juce::dontSendNotification);
     for (auto* c : {&tools, &snap, &bars, &channels, &scales, &roots, &typingOctave, &typingVelocity, &uiZoom}) { addAndMakeVisible(c); c->setWantsKeyboardFocus(false); }
     typing.setComponentID("typing-piano"); typing.setClickingTogglesState(true);
@@ -454,15 +470,38 @@ void PianoRollEditor::resized() {
     place(importButton,26); place(exportButton,26); place(save,26); place(load,26); place(help,26);
     x += 6; place(bpm,90); place(snap,146); place(bars,70); place(channels,94);
     x = 8; y += 30;
+    if (liveBridge.active()) { place(liveReload,26); place(liveApply,26); x+=6; }
     place(scales,104); place(roots,48); place(typingOctave,132); place(typingVelocity,106); place(uiZoom,96);
+    if(liveBridge.active()) place(liveTarget,std::min(300,std::max(100,width-x-8)));
     toolbarBottom = y + 32;
     roll.setTransform(juce::AffineTransform::scale(interfaceScale));
     roll.setViewportBounds({4, toolbarBottom, width - 8, std::max(120, height - toolbarBottom - 25)});
 }
+juce::Result PianoRollEditor::connectLiveBridge(const juce::File& folder) {
+    auto result=liveBridge.connect(folder);
+    if(result.wasOk()) {
+        liveReload.setVisible(true); liveApply.setVisible(true); liveTarget.setVisible(true); roll.releaseTyping(); roll.setTypingEnabled(false);
+        roll.channel=1; roll.refresh(); roll.fit(); resized();
+        typing.setTooltip("Typing audition through Live is not connected in this first clip bridge. Play the clip in Live to hear its synth.");
+        roll.status=liveBridge.message; refreshControls();
+    } else roll.status=result.getErrorMessage();
+    return result;
+}
 void PianoRollEditor::refreshControls() {
+    if(liveBridge.active()) {
+        if(++bridgePoll%6==0) { const auto previous=liveBridge.targetId(); const bool changed=liveBridge.poll(); if(changed) {roll.refresh();if(previous!=liveBridge.targetId())roll.fit();} }
+        roll.setEnabled(liveBridge.hasClip() && !liveBridge.waiting() && !roll.isProcessing());
+        liveApply.setEnabled(liveBridge.dirty() && !liveBridge.waiting() && !roll.isProcessing());
+        liveReload.setEnabled(!liveBridge.waiting());
+        for (auto* action : {&undo,&redo,&stamp,&processing}) action->setEnabled(liveBridge.hasClip() && !liveBridge.waiting() && !roll.isProcessing());
+        for(auto* c : std::initializer_list<juce::Component*>{&play,&host,&monitor,&typing,&typingOctave,&typingVelocity,&bars,&channels,&bpm,&importButton,&load}) c->setEnabled(false);
+        liveTarget.setText(liveBridge.clipName.isEmpty()?"Select a MIDI clip in Live":"Live clip: "+liveBridge.clipName,juce::dontSendNotification);
+        roll.status=liveBridge.message + (liveBridge.dirty()?" / unapplied edits":"");
+    }
+
     if (!displayDiagnosticsWritten && getPeer() != nullptr) {
         auto data = std::make_unique<juce::DynamicObject>();
-        data->setProperty("version", "0.4.2"); data->setProperty("peerScale",getPeer()->getPlatformScaleFactor());
+        data->setProperty("version", JucePlugin_VersionString); data->setProperty("peerScale",getPeer()->getPlatformScaleFactor());
         data->setProperty("componentScale",juce::Component::getApproximateScaleFactorForComponent(this));
         data->setProperty("desktopScale",juce::Desktop::getInstance().getGlobalScaleFactor());
         data->setProperty("logicalWidth",getWidth()); data->setProperty("logicalHeight",getHeight());
@@ -470,13 +509,13 @@ void PianoRollEditor::refreshControls() {
         file.getParentDirectory().createDirectory(); file.replaceWithText(juce::JSON::toString(juce::var(data.release())));
         displayDiagnosticsWritten = true;
     }
-    roll.pollTyping(); roll.refresh(); play.setButtonText(processor.playing.load() ? "Stop" : "Play"); play.setEnabled(!processor.hostSync.load());
+    roll.pollTyping(); roll.refresh(); play.setButtonText(processor.playing.load() ? "Stop" : "Play"); play.setEnabled(!processor.hostSync.load() && !liveBridge.active());
     for (size_t i = 0; i < toolButtons.size(); ++i) toolButtons[i].setToggleState(static_cast<int>(roll.tool) == static_cast<int>(i), juce::dontSendNotification);
     play.setToggleState(processor.playing.load(), juce::dontSendNotification);
     tools.setSelectedId(static_cast<int>(roll.tool) + 1, juce::dontSendNotification);
     host.setToggleState(processor.hostSync.load(), juce::dontSendNotification); monitor.setToggleState(processor.monitor.load(), juce::dontSendNotification);
     const bool followsHost = processor.hostSync.load();
-    bpm.setEnabled(!followsHost);
+    bpm.setEnabled(!followsHost && !liveBridge.active());
     const double hostTempo = processor.reportedHostTempo.load();
     bool tempoEditing = false;
     for (int i = 0; i < bpm.getNumChildComponents(); ++i)
